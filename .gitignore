@@ -16,6 +16,9 @@ safewallet-frontend/dist-ssr/
 *.sln
 *.sw?
 
+# History
+.history/
+
 # Sistema Operacional
 .DS_Store
 Thumbs.db
