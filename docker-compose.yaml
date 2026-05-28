@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  safewallet-db:
+    container_name: safewallet_db
+    image: postgres:15-alpine
+    restart: always
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=db_safewallet
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
+    driver: local
