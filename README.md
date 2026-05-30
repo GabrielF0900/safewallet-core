@@ -2,211 +2,200 @@
 
 ## 📋 Resumo Executivo (TL;DR)
 
-SafeWallet Core é um **microsserviço de carteira digital** desenvolvido como projeto pessoal para autodesenvolvimento em **arquitetura Java e Spring Boot**. O sistema implementa um fluxo completo de gerenciamento de usuários e cartões de crédito corporativos, com foco em **arquitetura limpa, validação em camadas e resiliência cloud-native**. Toda a infraestrutura é orquestrada via containers Docker para isolamento de recursos e facilidade de desenvolvimento local.
+SafeWallet Core é um **microsserviço de carteira digital de alta criticidade** desenvolvido para consolidar competências em **arquitetura Java avançada e ecossistemas Cloud-Native**. O sistema implementa um fluxo completo de gerenciamento de usuários, cartões corporativos e uma **esteira de segurança perimetral absoluta**, utilizando **Spring Security, Hashing BCrypt e tokens eclusivos Stateless JWT (JSON Web Tokens)**. O projeto adota validações rigorosas em camadas, tratamento elástico de exceções e orquestração automatizada via containers Docker.
 
 ---
 
 ## 🎯 Problema
 
-Aplicações que gerenciam carteiras digitais e dados de cartões sensíveis frequentemente enfrentam desafios:
+Aplicações financeiras e carteiras digitais que gerenciam saldos e cartões sensíveis sofrem com vulnerabilidades críticas e gargalos de infraestrutura quando mal desenhadas:
 
-- ❌ **Validação dispersa**: Dados inválidos fluem através das camadas, comprometendo integridade
-- ❌ **Arquitetura monolítica**: Difícil manutenção e escalabilidade
-- ❌ **Tratamento de erros inconsistente**: Diferentes formatos de resposta de erro confundem clientes API
-- ❌ **Falta de isolamento**: Conflitos de recursos locais impedem desenvolvimento paralelo
-
----
-
-## ✅ Solução
-
-O SafeWallet Core implementa:
-
-1. **Arquitetura em Camadas Isoladas**: Controllers → Services → Repositories → Entities
-2. **Validação em Borda**: Bean Validation (@Valid, @NotNull, @Email, @Pattern) intercepta requisições inválidas antes do processamento
-3. **Tratamento Global de Exceções**: @ControllerAdvice centraliza respostas de erro com formato padronizado (HTTP 400, 409, 500)
-4. **Microsserviço Stateless**: Orquestração containerizada com Docker/Docker Compose para isolamento total
-5. **Derivação de Queries**: Checagem de unicidade (findByEmail, findByCardNumber) em memória antes de persistência
+- ❌ **Sessões Stateful pesadas**: Guardar sessões na memória RAM do servidor impede a escalabilidade horizontal e sobrecarrega a nuvem.
+- ❌ **Vazamento de Senhas**: Armazenar credenciais em texto limpo ou com hashes fracos expõe os clientes a vazamentos catastróficos.
+- ❌ **Falhas BOLA / IDOR**: Endpoints privados expostos sem filtros centralizados permitem que invasores interceptem requisições e manipulem dados de terceiros.
+- ❌ **Vazamento de Metadados (Information Disclosure)**: Exceções internas e StackTraces não tratados expõem detalhes do banco de dados PostgreSQL para atacantes externos.
 
 ---
 
-## 🏗️ Arquitetura
+## ✅ Solução e Diferenciais de Engenharia
+
+O ecossistema do SafeWallet Core resolve esses desafios através de padrões de arquitetura de mercado:
+
+1. **Eclusa Perimetral Stateless (JWT)**: Autenticação baseada em chaves assimétricas compactas (RFC 7519) com tempo de vida estrito (TTL) de 1 hora. A API prova a identidade a cada requisição sem gastar memória RAM ou reter estado.
+2. **Trituração de Credenciais (BCrypt)**: Aplicação do algoritmo de hashing adaptativo e salting `BCryptPasswordEncoder` para garantir que senhas originais nunca toquem o banco de dados.
+3. **Filtro Customizado Interceptador (`OncePerRequestFilter`)**: Um interceptador centralizado (`SecurityFilter`) de rede que extrai, limpa os cabeçalhos `Authorization Bearer` e gerencia de forma imutável o contexto de segurança (`SecurityContextHolder`).
+4. **Tratamento Resiliente de Exceções Globais**: Uma central de atendimento de falhas (`GlobalExceptionHandler`) que captura de erros de validação do Jakarta (`@Valid`) a quebras de regras de negócio (`RuntimeException`), blindando metadados e respondendo contratos limpos.
+
+---
+
+## 🏗️ Arquitetura do Sistema
 
 ### Stack Tecnológico
 
-| Camada | Tecnologia |
-|--------|-----------|
-| **Backend** | Java 21, Spring Boot 3.x |
-| **Persistência** | Spring Data JPA, Hibernate |
-| **Banco de Dados** | PostgreSQL |
-| **Validação** | Jakarta Bean Validation (Hibernate Validator) |
-| **Orquestração** | Docker, Docker Compose |
-| **Build** | Maven |
-| **Frontend** | React 19, Vite, Node.js |
+| Camada | Tecnologia | Propósito |
+|--------|-----------|-----------|
+| **Framework Base** | Java 21, Spring Boot 4.0.6 | Motor core de execução do ecossistema |
+| **Segurança** | Spring Security, Auth0 Java-JWT | Controle de eclusas e assinaturas criptográficas |
+| **Criptografia** | BCrypt Ciphers | Hashing e salting de senhas em repouso |
+| **Persistência** | Spring Data JPA, Hibernate | Mapeamento objeto-relacional e queries automatizadas |
+| **Banco de Dados** | PostgreSQL 15 | Armazenamento relacional estável e ACID |
+| **Validação** | Jakarta Bean Validation | Restrições automáticas de borda e integridade |
+| **Orquestração** | Docker, Docker Compose | Isolamento total de infraestrutura e serviços |
+| **Build Tool** | Apache Maven | Gerenciamento de ciclo de vida e artefatos de código |
+| **Frontend** | React 19, Vite, Node.js | Interface rica para o usuário final |
 
-### Estrutura de Pacotes Java
+### Estrutura Real de Pacotes Java
 
+O projeto adota uma divisão modular baseada em **SOLID (Princípio de Responsabilidade Única)** e isolamento de escopo:
 ```
+
 br.com.safewallet
 │
-├── users/
-│   ├── controllers/          # Endpoints HTTP (UserController)
-│   ├── dto/                  # DTOs imutáveis (Record)
-│   ├── entity/               # Entidades JPA (UserEntity)
-│   ├── repositories/         # Interfaces JpaRepository
-│   └── services/             # Casos de uso (CreateUserService)
+├── controllers/          # Despachantes de tráfego HTTP e envelopes ResponseEntity
+│   └── UserController.java
 │
-├── cards/
-│   ├── controllers/          # Endpoints de cartões
-│   ├── dto/                  # DTOs de cartões
-│   ├── entity/               # CardEntity
-│   ├── repositories/         # CardRepository
-│   └── services/             # CreateCardService
+├── services/             # Casos de uso core e motores de regras de negócio
+│   ├── CreateUserService.java
+│   ├── AuthService.java
+│   └── TokenService.java
 │
-└── exceptions/
-    └── controllers/          # Centralizador Global (@ControllerAdvice)
-```
+├── security/             # Componentes perimetrais e interceptadores de rede
+│   ├── SecurityConfig.java
+│   └── SecurityFilter.java
+│
+├── dto/                  # Objetos de Transferência imutáveis (Java Records)
+│   ├── UserRequestDTO.java
+│   ├── UserResponseDTO.java
+│   ├── LoginRequestDTO.java
+│   └── LoginResponseDTO.java
+│
+├── entity/               # Modelagem de tabelas relacionais JPA
+│   └── UserEntity.java
+│
+├── repositories/         # Abstração física de acesso a dados (I/O)
+│   └── UserRepository.java
+│
+└── exceptions/           # Interceptadores globais de falhas da API
+├── GlobalExceptionHandler.java
+└── ApiErrorMessage.java
 
+```
 ---
 
-## 📋 Requisitos Implementados
+## 📋 Requisitos Técnicos Implementados
 
 ### Funcionais (RF)
-
-- **RF-001**: Cadastro de usuário com validação de email (RFC) e senha (mín. 6 caracteres)
-- **RF-002**: Vinculação de cartões de crédito a usuários existentes
-- **RF-003**: Validação automática de constraints na borda (Bean Validation)
-- **RF-004**: Prevenção de duplicatas via checagem em memória
-- **RF-005**: Tratamento global de exceções com contratos padronizados
+- **RF-001**: Cadastro de usuário com validação estrutural de e-mail e hashing de senha.
+- **RF-002**: Autenticação de credenciais no login via verificação segura de hashes do BCrypt.
+- **RF-003**: Emissão de passaportes digitais JWT auto-suficientes com claims customizadas (`email`, `name`).
+- **RF-004**: Intercepção e validação criptográfica automática de tokens em endpoints privados.
+- **RF-005**: Tratamento padronizado de exceções de validação e erros internos em formato JSON.
 
 ### Não-Funcionais (RNF)
-
-- Arquitetura cloud-native e stateless
-- Escalabilidade horizontal via containerização
-- Isolamento de responsabilidades (Separation of Concerns)
-- Resiliência de falhas infraestruturais
+- **Arquitetura 100% Stateless**: Habilita o escalonamento horizontal infinito em clusters de nuvem.
+- **Injeção por Construtor**: Garantia de imutabilidade de dependências e testabilidade facilitada.
+- **Imutabilidade de Contratos**: Uso exclusivo de Java Records na camada de transporte de dados externa.
 
 ---
 
-## 🚀 Começando
+## 🚀 Como Executar o Ecossistema Localmente
 
 ### Pré-requisitos
+- Java 21 SDK instalado
+- Apache Maven configurado
+- Docker & Docker Compose ativos
+- Node.js e pnpm instalados
 
-- Java 21+
-- Maven
-- Docker & Docker Compose
-- Node.js 18+ e pnpm (para frontend)
-
-### Estrutura do Projeto
-
+### Estrutura do Repositório
 ```
+
 safewallet/
-├── Backend/                  # Microsserviço Spring Boot
+├── backend/                  # Microsserviço Spring Boot (API REST Core)
 │   ├── src/
 │   ├── pom.xml
 │   └── ...
-├── Frontend/                 # Aplicação React + Vite
+├── frontend/                 # Interface do usuário em React
 │   ├── src/
 │   ├── package.json
 │   └── ...
-├── docker-compose.yaml       # Orquestração de containers
+├── docker-compose.yaml       # Orquestração do PostgreSQL local
 └── README.md
+
+```
+### Passo a Passo de Inicialização
+
+1. **Clone o repositório e navegue até a raiz:**
+   ```bash
+   git clone - cd safewallet
 ```
 
-### Execução Local
+1. **Inicialize o Banco de Dados PostgreSQL via Docker Compose:**Bash
+```
+docker-compose up -d
+```
+2. **Compile e execute o Back-end (Spring Boot):**
+*É obrigatório entrar na subpasta onde reside o arquivo pom.xml para o correto gerenciamento do cache da JVM:*Bash
+```
+cd backend
+mvn clean compile spring-boot:run
+```
+A API inicializará e estará pronta para escutar tráfego na porta padrão `http://localhost:8080`.
+3. **Inicialize a Interface Front-end (React):**Bash
+```
+cd ../frontend
+pnpm install
+pnpm run dev
+```
+O painel web estará acessível em `http://localhost:5173`.
 
-1. **Clone e navegue ao diretório:**
+## 📝 Contratos Principais da API (EndPoints)
 
-   ```bash
-   cd c:\Projetos\safewallet
-   ```
+### Autenticação Perimetral (`/api/auth`)
 
-2. **Suba a infraestrutura com Docker Compose:**
+#### 🔹 `POST /api/auth/register` — Cadastrar Novo Cliente
+**Acesso:** Público (`.permitAll()`)
+- **Payload de Entrada (JSON):**JSON
+```
+{
+  "name": "Gabriel Falcão",
+  "email": "gabriel.falcao@safewallet.com",
+  "password": "SenhaForte@2026"
+}
+```
+- **Payload de Resposta (`201 Created`):**JSON
+```
+{
+  "id": "a4a1305d-4675-4201-8486-3ef646a61e99",
+  "name": "Gabriel Falcão",
+  "email": "gabriel.falcao@safewallet.com"
+}
+```
 
-   ```bash
-   docker-compose up -d
-   ```
+#### 🔹 `POST /api/auth/login` — Efetuar Login Autenticado
 
-3. **Build e execute o Backend:**
+- **Acesso:** Público (`.permitAll()`)
+- **Payload de Entrada (JSON):**JSON
+```
+{
+  "email": "gabriel.falcao@safewallet.com",
+  "password": "SenhaForte@2026"
+}
+```
+- **Payload de Resposta Envelopado (`200 OK`):**JSON
+```
+{
+  "message": "Login efetuado com sucesso!",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNGExMzA1ZC...[JWT Tuncated]",
+  "name": "Gabriel Falcão"
+}
+```
 
-   ```bash
-   cd Backend
-   mvn clean install
-   mvn spring-boot:run
-   ```
+## 🌐 Alinhamento com Melhores Práticas AWS Cloud-Native
+Toda a arquitetura do software foi intencionalmente modularizada para facilitar deploys elásticos e de alta disponibilidade na nuvem da **AWS**:
 
-   O servidor iniciará em `http://localhost:8080`
-
-4. **Instale e execute o Frontend:**
-
-   ```bash
-   cd Frontend
-   pnpm install
-   pnpm run dev
-   ```
-
-   A aplicação React estará disponível em `http://localhost:5173`
-
----
-
-## 🎓 Objetivo Educacional
-
-Este projeto foi desenvolvido com a finalidade de **autodesenvolvimento em arquitetura Java**, aplicando conceitos práticos de:
-
-- ✨ Arquitetura Limpa (Clean Architecture)
-- ✨ Design Orientado a Objetos (OOP)
-- ✨ Princípios SOLID
-- ✨ Padrões de Projeto (DTO, Repository, Service)
-- ✨ Validação em camadas
-- ✨ Tratamento de exceções
-- ✨ Microsserviços e Cloud-Native
-- ✨ Containerização
-
----
-
-## 📝 Endpoints Principais
-
-### Users
-
-- `POST /users` — Registrar novo usuário
-  - Body: `{ "fullName": "string", "email": "string", "password": "string" }`
-  - Response: `201 Created`
-
-### Cards
-
-- `POST /cards` — Cadastrar cartão de crédito
-  - Body: `{ "userId": "UUID", "cardNumber": "string", "holderName": "string", "expiryDate": "MM/AA", "cvv": "string" }`
-  - Response: `201 Created`
-
----
-
-## 🛠️ Tecnologias por Camada
-
-| Camada | Tecnologias | Propósito |
-|--------|------------|----------|
-| **API Gateway** | Spring Boot, Spring Web | Roteamento e exposição de endpoints REST |
-| **Negócio** | Spring, SOLID Principles | Lógica de casos de uso |
-| **Persistência** | Spring Data JPA, Hibernate | Mapeamento objeto-relacional |
-| **Validação** | Jakarta Bean Validation | Constraints automáticas |
-| **Tratamento de Erros** | @ControllerAdvice | Centralização de exceções |
-| **Banco de Dados** | PostgreSQL | Armazenamento relacional |
-| **Frontend** | React 19, Vite | Interface de usuário moderna |
-| **Infraestrutura** | Docker, Docker Compose | Orquestração local |
-
----
-
-## 📚 Documentação Técnica
-
-Para mais detalhes sobre a arquitetura, requisitos técnicos e regras de negócio, consulte:
-
-- [Levantamento de Requisitos](./Levantamento-De-Requisitos/LevantamentoRequisitos_SafeWallet_Core.docx)
-- [HELP.md](./HELP.md)
-
----
+- **Segurança e Proteção de Segredos**: As chaves simétricas de assinatura criptográfica mapeadas no arquivo `application.properties` são preparadas para serem sobrescritas em tempo de execução via variáveis de ambiente integradas ao **AWS Secrets Manager** dentro de tarefas do **AWS ECS Fargate**.
+- **Escalabilidade Multi-AZ**: Por ser completamente Stateless, as instâncias deste microsserviço podem ser escaladas horizontalmente por um **Application Load Balancer (ALB)** em múltiplas Zonas de Disponibilidade (AZs) com risco zero de quebra de sessão.
+- **Observabilidade Perimetral**: As respostas capturadas pelo `GlobalExceptionHandler` alimentam as métricas nativas do **Amazon CloudWatch Logs**, permitindo a criação de alarmes automatizados contra tentativas em massa de ataques de força bruta (*Credential Stuffing*).
 
 ## 📄 Licença
-
-Projeto pessoal para fins educacionais.
-
----
-
-**Desenvolvido com foco em excelência arquitetural e aprendizado contínuo em Java & Spring Boot.**
+Projeto desenvolvido estritamente para fins educacionais, de portfólio técnico e autodesenvolvimento em arquitetura de sistemas críticos.
