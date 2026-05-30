@@ -9,10 +9,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;    
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final SecurityFilter securityFilter;
+
+    // Injeta o guarda perimetral que você desenvolveu
+    public SecurityConfig(SecurityFilter securityFilter) {
+        this.securityFilter = securityFilter;
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -21,16 +29,16 @@ public class SecurityConfig {
                     .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers("/error").permitAll() // 🟢 LIBERA A ROTA DE ERRO PRO HANDLER FUNCIONAR
                         .anyRequest().authenticated()
                     )
+                    // 🟢 ATIVA O SEU LEITOR DE CRACHÁS NA LINHA DE FRENTE
+                    .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                     .build();
-                
-
     }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    
 }

@@ -1,4 +1,6 @@
 package br.com.safewallet.dto;
+import java.util.UUID;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -19,4 +21,9 @@ public record UserRequestDTO (
     @Size(min = 6, message = "A senha deve conter no mínimo 6 caracteres")
     String password
 ) {
+
+    public UUID id() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'id'");
+    }
 }

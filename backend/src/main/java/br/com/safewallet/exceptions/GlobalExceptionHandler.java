@@ -46,4 +46,18 @@ public class GlobalExceptionHandler {
         );
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorPayload);
     }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiErrorMessage> handleRuntimeExceptions(RuntimeException ex, HttpServletRequest request) {
+
+        ApiErrorMessage errorPayload = new ApiErrorMessage(
+                Instant.now(), // Horário exato do erro
+                HttpStatus.BAD_REQUEST.value(), // Status HTTP 400
+                "Business Error", // Tipo do erro
+                ex.getMessage(), // Captura a mensagem exata (ex: "E-mail ou senha incorretos")
+                null // Sem erros de campos específicos aqui
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorPayload);
+    }
 }
