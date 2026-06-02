@@ -14,7 +14,7 @@ SafeWallet Core é um **ecossistema de carteira digital completo**, englobando u
 4. [📸 Demonstração do Sistema (Documentário)](#-demonstração-do-sistema-documentário)
 5. [🚀 Como Executar Localmente](#-como-executar-o-ecossistema-localmente)
 6. [📝 Contratos Principais da API](#-contratos-principais-da-api-endpoints)
-7. [🌐 Alinhamento AWS](#-alinhamento-com-melhores-práticas-aws-cloud-native)
+7. [☁️ Hospedagem e Infraestrutura AWS](#️-hospedagem-e-infraestrutura-aws-cloud-architecture)
 8. [📄 Licença](#-licença)
 
 ---
@@ -265,13 +265,9 @@ safewallet/
 
 ---
 
-## 🌐 Alinhamento com Melhores Práticas AWS Cloud-Native
+## ☁️ Hospedagem e Infraestrutura AWS (Cloud Architecture)
 
-Toda a arquitetura do software foi intencionalmente modularizada para facilitar deploys elásticos e de alta disponibilidade na nuvem da **AWS**:
-
-- **Segurança e Proteção de Segredos**: As chaves simétricas de assinatura criptográfica mapeadas no arquivo `application.properties` são preparadas para serem sobrescritas em tempo de execução via variáveis de ambiente integradas ao **AWS Secrets Manager** dentro de tarefas do **AWS ECS Fargate**.
-- **Escalabilidade Multi-AZ**: Por ser completamente Stateless, as instâncias deste microsserviço podem ser escaladas horizontalmente por um **Application Load Balancer (ALB)** em múltiplas Zonas de Disponibilidade (AZs) com risco zero de quebra de sessão.
-- **Observabilidade Perimetral**: As respostas capturadas pelo `GlobalExceptionHandler` alimentam as métricas nativas do **Amazon CloudWatch Logs**, permitindo a criação de alarmes automatizados contra tentativas em massa de ataques de força bruta (*Credential Stuffing*).
+O ecossistema **SafeWallet Core** encontra-se em fase de modelagem de infraestrutura *Cloud-Native*. A arquitetura AWS está atualmente sendo desenhada e preparada (via Terraform e serviços como ECS Fargate, RDS e CloudFront) para que todo o sistema, de ponta a ponta, seja hospedado em breve na Amazon Web Services (AWS) com altíssima disponibilidade e segurança de nível bancário.
 
 ---
 
