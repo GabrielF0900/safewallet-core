@@ -11,10 +11,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/transactions")
+@RequestMapping("/api/transactions")
 @RequiredArgsConstructor
 public class TransactionController {
 
@@ -40,7 +41,14 @@ public class TransactionController {
         UUID userId = extractUserId();
         WalletEntity wallet = walletRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Carteira não encontrada para o usuário."));
-        return ResponseEntity.ok(new BalanceResponseDTO(wallet.getBalance(), userId));
+        return ResponseEntity.ok(new BalanceResponseDTO(wallet.getBalance(), wallet.getId()));
+    }
+
+    @GetMapping("/history")
+    public ResponseEntity<List<TransactionHistoryDTO>> getHistory() {
+        UUID userId = extractUserId();
+        List<TransactionHistoryDTO> history = transactionService.getHistory(userId);
+        return ResponseEntity.ok(history);
     }
 
     @PostMapping("/deposit")
@@ -72,8 +80,13 @@ public class TransactionController {
             throw new SecurityException("Usuário não autenticado.");
         }
 
-        UserEntity user = (UserEntity) authentication.getPrincipal();
-        if (user == null || user.getId() == null) {
+        Object principal = authentication.getPrincipal();
+        if (!(principal instanceof UserEntity)) {
+            throw new SecurityException("Usuário não autenticado ou tipo de principal inválido.");
+        }
+
+        UserEntity user = (UserEntity) principal;
+        if (user.getId() == null) {
             throw new SecurityException("Usuário não identificado no contexto da requisição.");
         }
 
