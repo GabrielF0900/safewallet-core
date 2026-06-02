@@ -1,5 +1,3 @@
-
-```markdown
 # SafeWallet Core
 
 ## 📋 Resumo Executivo (TL;DR)
@@ -34,7 +32,7 @@ Aplicações financeiras e carteiras digitais que gerenciam saldos sensíveis so
 
 ## ✅ Solução e Diferenciais
 
-O ecossistema do SafeWallet Core resolves esses desafios através de padrões de arquitetura de mercado focados em máxima segurança:
+O ecossistema do SafeWallet Core resolve esses desafios através de padrões de arquitetura de mercado focados em máxima segurança:
 
 1. **Segurança Profunda e Proteção de Rotas (Spring Security)**: O backend foi meticulosamente blindado utilizando o ecossistema Spring Security. Todas as rotas de transações e consultas financeiras são fechadas por padrão. Apenas os endpoints de registro e login são públicos. Isso garante que nenhum usuário anônimo ou mal-intencionado consiga sondar endpoints sensíveis ou realizar ataques BOLA (Broken Object Level Authorization).
 2. **Eclusa Perimetral Stateless (JWT)**: A autenticação é totalmente baseada em JSON Web Tokens (RFC 7519). Ao realizar login, o servidor assina um passe digital usando o algoritmo HMAC256. A API prova a identidade a cada requisição sem precisar verificar o banco de dados para validar sessões, economizando memória RAM e permitindo escalabilidade instantânea.
@@ -42,7 +40,7 @@ O ecossistema do SafeWallet Core resolves esses desafios através de padrões de
 4. **Trituração de Credenciais (BCrypt)**: Aplicação do algoritmo de hashing adaptativo e salting `BCryptPasswordEncoder` para garantir que senhas originais nunca toquem o banco de dados em texto plano.
 5. **Tratamento Resiliente de Exceções Globais**: Uma central de atendimento de falhas (`GlobalExceptionHandler`) que captura desde erros de validação do Jakarta (`@Valid`) até quebras de regras de negócio (`RuntimeException`), blindando metadados e respondendo contratos limpos, evitando o vazamento de detalhes técnicos sensíveis do servidor.
 6. **Fluxo de Transações ACID**: Operações de depósito, saque e transferência executadas dentro de transações que garantem consistência de dados e rollback automático em caso de falha.
-7. **Interface Web Reativa e Segura**: Um frontend moderno construído com React e Next.js, garantindo experiência fluida e alinhado com o backend na interceptação de tokens expirados (401 Unauthorized), protegendo ativamente as rotas no lado del cliente.
+7. **Interface Web Reativa e Segura**: Um frontend moderno construído com React e Next.js, garantindo experiência fluida e alinhado com o backend na interceptação de tokens expirados (401 Unauthorized), protegendo ativamente as rotas no lado do cliente.
 
 ---
 
@@ -204,7 +202,7 @@ safewallet/
 1. **Clone o repositório e navegue até a raiz:**
 
 ```bash
-   git clone [https://github.com/GabrielF0900/safewallet-core.git](https://github.com/GabrielF0900/safewallet-core.git)
+   git clone https://github.com/GabrielF0900/safewallet-core.git
    cd safewallet
 
 ```
@@ -315,7 +313,3 @@ Projeto desenvolvido estritamente para fins educacionais, de portfólio técnico
 ---
 
 **Desenvolvido com ❤️ por Gabriel Falcão | 2026**
-
-```
-
-```
