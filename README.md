@@ -62,62 +62,107 @@ O ecossistema do SafeWallet Core resolve esses desafios através de padrões de 
 
 ## 📸 Demonstração do Sistema (Documentário)
 
-Acompanhe a jornada completa de utilização da plataforma **SafeWallet Core**, ilustrando uma operação financeira segura de ponta a ponta entre dois usuários reais no sistema em execução.
+Acompanhe a jornada visual da utilização da plataforma **SafeWallet Core**, ilustrando desde a apresentação da landing page até operações financeiras seguras no sistema em execução.
 
-### 1️⃣ O Início da Jornada: Registro de João
-Tudo começa quando o usuário **João Silva** decide entrar para o ecossistema SafeWallet. Ele acessa a página de registro e preenche suas informações com segurança. O sistema imediatamente cria sua conta, aplica o hash BCrypt em sua senha e provisiona sua carteira digital exclusiva.
+### 1️⃣ Bem-vindo à SafeWallet
+A nossa Landing Page principal apresenta as vantagens de ter uma carteira digital segura e moderna.
 
-![Registro de João](./public/imagens-para-documentacao/register-joao.jpeg)
+![Home - Topo](./public/imagens-do-sistema-rodando/01-home.jpeg)
 
-### 2️⃣ Acesso ao Painel Seguro
-Com o cadastro concluído, João acessa a tela de login para validar suas credenciais. O backend confirma a assinatura e emite um passe digital (Token JWT) para proteger todas as suas próximas requisições.
+Continuando pela página, o usuário descobre mais detalhes sobre os recursos que garantem o ecossistema ACID das transações.
 
-![Login de João](./public/imagens-para-documentacao/login-joao.jpeg)
+![Home - Detalhes](./public/imagens-do-sistema-rodando/02-home-abaixo.jpeg)
 
-### 3️⃣ A Carteira Intacta
-Ao entrar no seu *dashboard* pessoal, João visualiza seu saldo inicial intacto. A SafeWallet garante um isolamento absoluto; nenhuma outra entidade no sistema consegue acessar as informações financeiras mostradas em sua tela.
+E finaliza com o rodapé institucional, garantindo a confiança do usuário.
 
-![Carteira Vazia de João](./public/imagens-para-documentacao/carteira-vazia-joao.jpeg)
+![Home - Rodapé](./public/imagens-do-sistema-rodando/03-footer.jpeg)
 
-### 4️⃣ O Primeiro Depósito
-João decide adicionar fundos para começar a movimentar sua carteira. Ele acessa a funcionalidade de depósito e injeta capital no sistema. Todo o processo passa por garantias de transação (ACID) do banco de dados relacional.
+### 2️⃣ Entrando na Plataforma
+O usuário acessa o portal de autenticação moderno da plataforma para acessar seus recursos financeiros de forma protegida.
 
-![Depósito de João](./public/imagens-para-documentacao/deposito-joao.jpeg)
+![Login Seguro](./public/imagens-do-sistema-rodando/04-login.jpeg)
 
-### 5️⃣ Confirmação de Saldo
-Instantes após o depósito, a conta bancária reflete o novo montante. O sistema atualizou dinamicamente o saldo, registrando simultaneamente o histórico do depósito de forma imutável.
+### 3️⃣ A Criação de Novos Usuários
+Caso ainda não tenha uma conta, o sistema disponibiliza um formulário de cadastro validado e reativo, já conectando com a API segura em Java. O usuário 1 e o usuário 2 (como exemplos) realizam seus cadastros.
 
-![Carteira de João com Dinheiro](./public/imagens-para-documentacao/carteira-joao-com-dinheiro.jpeg)
+![Cadastro - Passo 1](./public/imagens-do-sistema-rodando/05-criando-usuario-1.jpeg)
 
-### 6️⃣ A Chegada de Maria
-Enquanto João usufrui da plataforma, a usuária **Maria Santos** também realiza seu cadastro na SafeWallet. O sistema cria de maneira isolada o perímetro de Maria.
+![Cadastro - Passo 2](./public/imagens-do-sistema-rodando/06-criando-usuario-2.jpeg)
 
-![Registro de Maria](./public/imagens-para-documentacao/register-maria.jpeg)
+### 4️⃣ A Visão Geral: O Dashboard
+Após entrar no sistema, o usuário é direcionado para a sua Visão Geral. Gráficos em tempo real e um layout focado em usabilidade mostram as estatísticas da sua carteira digital.
 
-### 7️⃣ Autenticação de Maria
-Maria faz o seu primeiro login e entra em seu ambiente pessoal protegido.
+![Dashboard Principal](./public/imagens-do-sistema-rodando/07-dashboard.jpeg)
 
-![Login de Maria](./public/imagens-para-documentacao/login-maria.jpeg)
+### 5️⃣ Gestão de Carteira e Saldo
+Nesta área exclusiva, o usuário pode consultar a saúde da sua conta, visualizando seu Wallet ID e seu saldo com precisão.
 
-### 8️⃣ O Ambiente Financeiro de Maria
-A dashboard de Maria exibe sua carteira perfeitamente zerada. Seus dados estão completamente blindados e não têm relação com a carteira de João.
+![Saldo e Carteira](./public/imagens-do-sistema-rodando/08-saldo-e-carteira.jpeg)
 
-![Carteira Vazia de Maria](./public/imagens-para-documentacao/carteira-vazia-maria.jpeg)
+### 6️⃣ A Interface de Transações: Depositando
+Para alimentar a conta recém-criada, o usuário usa o menu de depósitos de maneira intuitiva.
 
-### 9️⃣ Compartilhamento de Endereço (Wallet ID)
-Para que João possa transferir dinheiro para Maria, ele solicita sua chave de recebimento. Maria acessa seu painel, copia o seu **Wallet ID único** (um UUID seguro) e compartilha com João.
+![Tela de Depósito](./public/imagens-do-sistema-rodando/09-depositar.jpeg)
 
-![Pegando Carteira de Maria](./public/imagens-para-documentacao/pegando-carteira-de-maria.jpeg)
+Ao confirmar a transação, o sistema realiza a operação, persistindo-a nas tabelas e confirmando visualmente.
 
-### 🔟 Executando a Transferência
-De posse do Wallet ID de Maria, João acessa a funcionalidade de transferência em seu dashboard. Ele preenche o valor desejado, e o backend orquestra simultaneamente o saque da sua carteira e o depósito na conta de Maria. Se qualquer parte falhasse, o *rollback automático* desfazeria toda a operação.
+![Sucesso no Depósito do Usuário 1](./public/imagens-do-sistema-rodando/14-depositando-na-conta-usuario-1.jpeg)
 
-![Transferindo para Maria](./public/imagens-para-documentacao/transferindo-para-maria.jpeg)
+Logo em seguida, a carteira do usuário já reflete instantaneamente o saldo abastecido.
 
-### 1️⃣1️⃣ Recebimento Confirmado
-A mágica acontece. No momento em que Maria atualiza seu saldo, o montante enviado por João já se encontra disponível de forma segura em sua carteira. A transferência P2P foi um sucesso!
+![Carteira do Usuário 1 com Saldo](./public/imagens-do-sistema-rodando/16-carteira-do-usuario-1-com-dinheiro.jpeg)
 
-![Carteira de Maria com Dinheiro](./public/imagens-para-documentacao/carteira-de-maria-com-dinheiro-apos-transferenciaa.jpeg)
+### 7️⃣ Outras Operações: O Saque
+Assim como o depósito, o usuário tem à disposição o menu de Saque para liquidar recursos.
+
+![Tela de Saque](./public/imagens-do-sistema-rodando/10-sacar.jpeg)
+
+Se o usuário executar um saque e o saldo for suficiente, o sistema processa de imediato.
+
+![Confirmação de Saque](./public/imagens-do-sistema-rodando/18-saque-realizado.jpeg)
+
+### 8️⃣ Interação P2P: O Usuário 2 entra em cena
+Enquanto isso, a conta do Usuário 2 foi criada e acessada. Ele nota que sua carteira está completamente isolada e vazia, pronta para receber fundos.
+
+![Carteira Vazia do Usuário 2](./public/imagens-do-sistema-rodando/15-carteira-do-usuario-2-vazia.jpeg)
+
+### 9️⃣ Orquestrando uma Transferência
+Com a necessidade de transferir valores para o Usuário 2, o Usuário 1 acessa o painel de transferência. Informa o Wallet ID do destinatário e o valor desejado.
+
+![Tela de Transferência](./public/imagens-do-sistema-rodando/11-transferir.jpeg)
+
+Ele preenche e envia o formulário...
+
+![Processando a Transferência](./public/imagens-do-sistema-rodando/17-transferindo-para-usuario-2.jpeg)
+
+E a confirmação instantânea da transferência é apresentada na tela. O valor saiu de sua carteira e foi injetado na conta do destino!
+
+![Sucesso na Transferência](./public/imagens-do-sistema-rodando/19-transferido.jpeg)
+
+### 🔟 A Chegada do Dinheiro
+Imediatamente, ao visualizar o seu próprio painel, o Usuário 2 constata o aumento em seu saldo após receber os recursos do Usuário 1.
+
+![Carteira do Usuário 2 com Dinheiro](./public/imagens-do-sistema-rodando/20-usuario-2-com-valor.jpeg)
+
+### 1️⃣1️⃣ Transparência e Rastreabilidade
+Cada movimentação no ecossistema fica gravada no histórico de transações dos usuários envolvidos, proporcionando trilha de auditoria completa (Compliance RNF).
+
+Na tela principal do histórico, listamos as transações em formato de tabela.
+
+![Acesso ao Menu de Histórico](./public/imagens-do-sistema-rodando/12-historico.jpeg)
+
+Visão do histórico do Usuário 1, com saídas (transferências e saques) e entradas (depósitos).
+
+![Histórico do Usuário 1](./public/imagens-do-sistema-rodando/22-historico-usuario-1.jpeg)
+
+Visão do histórico do Usuário 2, atestando o recebimento da transferência.
+
+![Histórico do Usuário 2](./public/imagens-do-sistema-rodando/21-historico-usuario-2.jpeg)
+
+### 1️⃣2️⃣ Finalizando o Expediente
+O sistema também dispõe de uma tela de Configurações, onde o usuário pode administrar seu perfil e sua sessão, mantendo suas preferências em segurança.
+
+![Tela de Configurações](./public/imagens-do-sistema-rodando/13-configuracoes.jpeg)
 
 ---
 
