@@ -32,14 +32,15 @@ Aplicações financeiras e carteiras digitais que gerenciam saldos sensíveis so
 
 ## ✅ Solução e Diferenciais
 
-O ecossistema do SafeWallet Core resolve esses desafios através de padrões de arquitetura de mercado:
+O ecossistema do SafeWallet Core resolve esses desafios através de padrões de arquitetura de mercado focados em máxima segurança:
 
-1. **Eclusa Perimetral Stateless (JWT)**: Autenticação baseada em chaves assimétricas compactas (RFC 7519) com tempo de vida estrito (TTL) de 1 hora. A API prova a identidade a cada requisição sem gastar memória RAM ou reter estado.
-2. **Trituração de Credenciais (BCrypt)**: Aplicação do algoritmo de hashing adaptativo e salting `BCryptPasswordEncoder` para garantir que senhas originais nunca toquem o banco de dados.
-3. **Filtro Customizado Interceptador (`OncePerRequestFilter`)**: Um interceptador centralizado (`SecurityFilter`) de rede que extrai, limpa os cabeçalhos `Authorization Bearer` e gerencia de forma imutável o contexto de segurança (`SecurityContextHolder`).
-4. **Tratamento Resiliente de Exceções Globais**: Uma central de atendimento de falhas (`GlobalExceptionHandler`) que captura desde erros de validação do Jakarta (`@Valid`) até quebras de regras de negócio (`RuntimeException`), blindando metadados e respondendo contratos limpos.
-5. **Fluxo de Transações ACID**: Operações de depósito, saque e transferência executadas dentro de transações que garantem consistência de dados e rollback automático em caso de falha.
-6. **Interface Web Reativa**: Um frontend moderno construído com React, garantindo experiência fluida de usuário e proteção robusta de rotas.
+1. **Segurança Profunda e Proteção de Rotas (Spring Security)**: O backend foi meticulosamente blindado utilizando o ecossistema Spring Security. Todas as rotas de transações e consultas financeiras são fechadas por padrão. Apenas os endpoints de registro e login são públicos. Isso garante que nenhum usuário anônimo ou mal-intencionado consiga sondar endpoints sensíveis ou realizar ataques BOLA (Broken Object Level Authorization).
+2. **Eclusa Perimetral Stateless (JWT)**: A autenticação é totalmente baseada em JSON Web Tokens (RFC 7519). Ao realizar login, o servidor assina um passe digital usando o algoritmo HMAC256. A API prova a identidade a cada requisição sem precisar verificar o banco de dados para validar sessões, economizando memória RAM e permitindo escalabilidade instantânea.
+3. **Interceptador Customizado (`OncePerRequestFilter`)**: Desenvolvemos um filtro customizado de rede (`SecurityFilter`) que atua como um leão de chácara. Ele intercepta 100% das requisições para rotas protegidas, limpa o cabeçalho `Authorization Bearer`, decifra o token, valida a assinatura e sua expiração, garantindo a integridade do contexto de segurança (`SecurityContextHolder`) de forma imutável antes que o fluxo alcance as regras de negócio.
+4. **Trituração de Credenciais (BCrypt)**: Aplicação do algoritmo de hashing adaptativo e salting `BCryptPasswordEncoder` para garantir que senhas originais nunca toquem o banco de dados em texto plano.
+5. **Tratamento Resiliente de Exceções Globais**: Uma central de atendimento de falhas (`GlobalExceptionHandler`) que captura desde erros de validação do Jakarta (`@Valid`) até quebras de regras de negócio (`RuntimeException`), blindando metadados e respondendo contratos limpos, evitando o vazamento de detalhes técnicos sensíveis do servidor.
+6. **Fluxo de Transações ACID**: Operações de depósito, saque e transferência executadas dentro de transações que garantem consistência de dados e rollback automático em caso de falha.
+7. **Interface Web Reativa e Segura**: Um frontend moderno construído com React e Next.js, garantindo experiência fluida e alinhado com o backend na interceptação de tokens expirados (401 Unauthorized), protegendo ativamente as rotas no lado do cliente.
 
 ---
 
@@ -78,51 +79,51 @@ E finaliza com o rodapé institucional, garantindo a confiança do usuário.
 ![Home - Rodapé](./public/imagens-do-sistema-rodando/03-footer.jpeg)
 
 ### 2️⃣ Entrando na Plataforma
-O usuário acessa o portal de autenticação moderno da plataforma para acessar seus recursos financeiros de forma protegida.
+O usuário acessa o portal de autenticação. Nos bastidores, ao validar as credenciais, o **Spring Security** emite um token **JWT (JSON Web Token)** assinado com HMAC256. O front-end em React armazena esse passe digital de forma segura, garantindo sessões *stateless* (sem estado na memória do servidor) e proteção total nas próximas requisições.
 
 ![Login Seguro](./public/imagens-do-sistema-rodando/04-login.jpeg)
 
 ### 3️⃣ A Criação de Novos Usuários
-Caso ainda não tenha uma conta, o sistema disponibiliza um formulário de cadastro validado e reativo, já conectando com a API segura em Java. O usuário 1 e o usuário 2 (como exemplos) realizam seus cadastros.
+Caso ainda não tenha uma conta, o sistema disponibiliza um formulário de cadastro validado e reativo. Ao submeter, a API aplica automaticamente o **hashing adaptativo BCrypt** na senha do usuário. A senha original nunca toca o banco de dados PostgreSQL, mitigando riscos de vazamentos catastróficos. O usuário 1 e o usuário 2 realizam seus cadastros sob essa proteção.
 
 ![Cadastro - Passo 1](./public/imagens-do-sistema-rodando/05-criando-usuario-1.jpeg)
 
 ![Cadastro - Passo 2](./public/imagens-do-sistema-rodando/06-criando-usuario-2.jpeg)
 
 ### 4️⃣ A Visão Geral: O Dashboard
-Após entrar no sistema, o usuário é direcionado para a sua Visão Geral. Gráficos em tempo real e um layout focado em usabilidade mostram as estatísticas da sua carteira digital.
+Após entrar no sistema, o React envia o JWT no cabeçalho (Bearer Token). Nosso **SecurityFilter (`OncePerRequestFilter`)** intercepta a chamada, valida a assinatura criptográfica e autoriza o carregamento do Dashboard. Gráficos em tempo real mostram as estatísticas protegidas.
 
 ![Dashboard Principal](./public/imagens-do-sistema-rodando/07-dashboard.jpeg)
 
 ### 5️⃣ Gestão de Carteira e Saldo
-Nesta área exclusiva, o usuário pode consultar a saúde da sua conta, visualizando seu Wallet ID e seu saldo com precisão.
+Nesta área exclusiva, o usuário pode consultar a saúde da sua conta. Graças ao contexto extraído do token pelo **Spring Security**, o backend garante que não ocorram ataques BOLA/IDOR — o usuário só consegue visualizar e iterar com o seu próprio Wallet ID e saldo. O isolamento de contexto é absoluto.
 
 ![Saldo e Carteira](./public/imagens-do-sistema-rodando/08-saldo-e-carteira.jpeg)
 
 ### 6️⃣ A Interface de Transações: Depositando
-Para alimentar a conta recém-criada, o usuário usa o menu de depósitos de maneira intuitiva.
+Para alimentar a conta recém-criada, o usuário usa o menu de depósitos. A requisição passa novamente pela *eclusa perimetral* de segurança e entra numa operação de banco de dados **ACID** (através da anotação `@Transactional` no Spring).
 
 ![Tela de Depósito](./public/imagens-do-sistema-rodando/09-depositar.jpeg)
 
-Ao confirmar a transação, o sistema realiza a operação, persistindo-a nas tabelas e confirmando visualmente.
+Ao confirmar a transação, o sistema realiza a operação. Se algo falhasse, o Spring aplicaria o *rollback* automático. Sendo bem-sucedido, ele persiste na tabela de forma atômica.
 
 ![Sucesso no Depósito do Usuário 1](./public/imagens-do-sistema-rodando/14-depositando-na-conta-usuario-1.jpeg)
 
-Logo em seguida, a carteira do usuário já reflete instantaneamente o saldo abastecido.
+Logo em seguida, a carteira do usuário reflete instantaneamente o saldo abastecido, lido com segurança da base de dados.
 
 ![Carteira do Usuário 1 com Saldo](./public/imagens-do-sistema-rodando/16-carteira-do-usuario-1-com-dinheiro.jpeg)
 
 ### 7️⃣ Outras Operações: O Saque
-Assim como o depósito, o usuário tem à disposição o menu de Saque para liquidar recursos.
+Assim como o depósito, o usuário tem à disposição o menu de Saque para liquidar recursos, também protegido pelo filtro JWT.
 
 ![Tela de Saque](./public/imagens-do-sistema-rodando/10-sacar.jpeg)
 
-Se o usuário executar um saque e o saldo for suficiente, o sistema processa de imediato.
+Se o usuário executar um saque e o backend validar o saldo via regra de negócio rigorosa, a dedução é processada de imediato, e a resposta blindada de erros críticos é devolvida ao React.
 
 ![Confirmação de Saque](./public/imagens-do-sistema-rodando/18-saque-realizado.jpeg)
 
 ### 8️⃣ Interação P2P: O Usuário 2 entra em cena
-Enquanto isso, a conta do Usuário 2 foi criada e acessada. Ele nota que sua carteira está completamente isolada e vazia, pronta para receber fundos.
+Enquanto isso, a conta do Usuário 2 foi criada e acessada. Ele nota que sua carteira está completamente isolada e vazia, pronta para receber fundos. A arquitetura de segurança do Spring garante que o perímetro deste usuário seja estritamente isolado do primeiro.
 
 ![Carteira Vazia do Usuário 2](./public/imagens-do-sistema-rodando/15-carteira-do-usuario-2-vazia.jpeg)
 
@@ -131,21 +132,21 @@ Com a necessidade de transferir valores para o Usuário 2, o Usuário 1 acessa o
 
 ![Tela de Transferência](./public/imagens-do-sistema-rodando/11-transferir.jpeg)
 
-Ele preenche e envia o formulário...
+Ele preenche e envia o formulário. Neste momento, o Java abre uma única **transação atômica** para debitar do Usuário 1 e creditar no Usuário 2.
 
 ![Processando a Transferência](./public/imagens-do-sistema-rodando/17-transferindo-para-usuario-2.jpeg)
 
-E a confirmação instantânea da transferência é apresentada na tela. O valor saiu de sua carteira e foi injetado na conta do destino!
+A confirmação instantânea é apresentada na tela. O valor saiu de sua carteira e foi injetado na conta do destino sem risco de concorrência suja!
 
 ![Sucesso na Transferência](./public/imagens-do-sistema-rodando/19-transferido.jpeg)
 
 ### 🔟 A Chegada do Dinheiro
-Imediatamente, ao visualizar o seu próprio painel, o Usuário 2 constata o aumento em seu saldo após receber os recursos do Usuário 1.
+Imediatamente, ao visualizar o seu próprio painel (acessado com seu próprio JWT seguro), o Usuário 2 constata o aumento em seu saldo após receber os recursos do Usuário 1.
 
 ![Carteira do Usuário 2 com Dinheiro](./public/imagens-do-sistema-rodando/20-usuario-2-com-valor.jpeg)
 
 ### 1️⃣1️⃣ Transparência e Rastreabilidade
-Cada movimentação no ecossistema fica gravada no histórico de transações dos usuários envolvidos, proporcionando trilha de auditoria completa (Compliance RNF).
+Cada movimentação no ecossistema fica gravada no histórico de transações. Os endpoints de histórico são totalmente fechados, permitindo que cada pessoa veja apenas as movimentações atreladas à sua própria assinatura criptográfica.
 
 Na tela principal do histórico, listamos as transações em formato de tabela.
 
@@ -160,7 +161,7 @@ Visão do histórico do Usuário 2, atestando o recebimento da transferência.
 ![Histórico do Usuário 2](./public/imagens-do-sistema-rodando/21-historico-usuario-2.jpeg)
 
 ### 1️⃣2️⃣ Finalizando o Expediente
-O sistema também dispõe de uma tela de Configurações, onde o usuário pode administrar seu perfil e sua sessão, mantendo suas preferências em segurança.
+O sistema dispõe de uma tela de Configurações onde o usuário pode administrar seu perfil e revogar sua sessão no lado do cliente, removendo o JWT do *storage* local e desativando acessos.
 
 ![Tela de Configurações](./public/imagens-do-sistema-rodando/13-configuracoes.jpeg)
 
