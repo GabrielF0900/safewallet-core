@@ -63,111 +63,105 @@ O ecossistema do SafeWallet Core resolve esses desafios através de padrões de 
 
 ## 📸 Demonstração do Sistema (Documentário)
 
-Acompanhe a jornada visual da utilização da plataforma **SafeWallet Core**, detalhando os bastidores de segurança, criptografia e controle transacional executados pelo backend a cada interação da interface.
+Acompanhe a jornada visual da utilização da plataforma **SafeWallet Core**, ilustrando desde a apresentação da landing page até operações financeiras seguras no sistema em execução.
 
 ### 1️⃣ Bem-vindo à SafeWallet
-A Landing Page atua como a camada de apresentação pública do ecossistema. Na infraestrutura de segurança do **Spring Security**, essa rota ignora a cadeia de filtros restritivos através do método `.permitAll()`, permitindo o carregamento estático de recursos sem exigir cabeçalhos de autenticação.
+A nossa Landing Page principal apresenta as vantagens de ter uma carteira digital segura e moderna.
 
 ![Home - Topo](./public/imagens-do-sistema-rodando/01-home.jpeg)
 
-O tráfego de navegação inicial é puramente focado na experiência do usuário, mantendo a porta de comunicação com a API aberta apenas para leitura institucional e sem expor qualquer ponto de I/O de dados privados.
+Continuando pela página, o usuário descobre mais detalhes sobre os recursos que garantem o ecossistema ACID das transações.
 
 ![Home - Detalhes](./public/imagens-do-sistema-rodando/02-home-abaixo.jpeg)
 
-O encerramento da interface pública estabelece o limite do perímetro aberto da aplicação. Qualquer transição a partir deste ponto exige o redirecionamento para o microsserviço de controle de acesso.
+E finaliza com o rodapé institucional, garantindo a confiança do usuário.
 
 ![Home - Rodapé](./public/imagens-do-sistema-rodando/03-footer.jpeg)
 
-### 2️⃣ Entrando na Plataforma: Geração do Token Stateless JWT
-Ao submeter o formulário de login, o payload é processado pelo endpoint público `/api/auth/login`. O backend intercepta a senha em texto limpo, valida a correspondência criptográfica usando o método `passwordEncoder.matches()` contra a hash armazenada no PostgreSQL e monta o token **JWT** via algoritmo **HMAC256**. O token envelopa o identificador do usuário (`subject`) e uma claim de expiração rigorosa (`exp`), permitindo sessões 100% independentes de memória de servidor.
+### 2️⃣ Entrando na Plataforma
+O usuário acessa o portal de autenticação. Nos bastidores, ao validar as credenciais, o **Spring Security** emite um token **JWT (JSON Web Token)** assinado com HMAC256. O front-end em React armazena esse passe digital de forma segura, garantindo sessões *stateless* (sem estado na memória do servidor) e proteção total nas próximas requisições.
 
 ![Login Seguro](./public/imagens-do-sistema-rodando/04-login.jpeg)
 
-### 3️⃣ A Criação de Novos Usuários e o Vínculo Atômico da Carteira
-O formulário de registro aciona o caso de uso `CreateUserService`. Ao receber a requisição, o sistema aplica a criptografia adaptativa com salting do **BCrypt**, garantindo que a senha original seja destruída na memória da JVM antes da persistência. 
+### 3️⃣ A Criação de Novos Usuários
+Caso ainda não tenha uma conta, o sistema disponibiliza um formulário de cadastro validado e reativo. Ao submeter, a API aplica automaticamente o **hashing adaptativo BCrypt** na senha do usuário. A senha original nunca toca o banco de dados PostgreSQL, mitigando riscos de vazamentos catastróficos. O usuário 1 e o usuário 2 realizam seus cadastros sob essa proteção.
 
-Para evitar furos de sincronia, a operação roda sob a proteção da anotação `@Transactional`: no instante em que o `UserEntity` é criado, o sistema gera simultaneamente uma `WalletEntity` vinculada ao UUID do novo usuário com saldo inicial em `BigDecimal.ZERO`. Se um deles falhar, o banco sofre *rollback* total.
+![Cadastro - Passo 1](./public/imagens-do-sistema-rodando/05-criando-usuario-1.jpeg)
 
-![Cadastro do João Silva](./public/imagens-do-sistema-rodando/05-criando-usuario-1.jpeg)
+![Cadastro - Passo 2](./public/imagens-do-sistema-rodando/06-criando-usuario-2.jpeg)
 
-A mesma infraestrutura transacional isolada garante que o cadastro de múltiplos usuários aconteça em escopos paralelos no PostgreSQL, gerando credenciais únicas e carteiras vazias totalmente estretificadas no banco de dados.
-
-![Cadastro da Maria Santos](./public/imagens-do-sistema-rodando/06-criando-usuario-2.jpeg)
-
-### 4️⃣ A Visão Geral: Filtros de Rede Customizados em Ação
-O carregamento do Dashboard exige o envio do JWT gerado no cabeçalho HTTP `Authorization: Bearer <token>`. O nosso componente `SecurityFilter` (que estende `OncePerRequestFilter`) intercepta a requisição, decodifica a assinatura simétrica e valida o ciclo de vida do token. Se o token estiver corrompido ou expirado, a requisição é barrada na borda da rede, devolvendo um código **HTTP 401 Unauthorized** imediato.
+### 4️⃣ A Visão Geral: O Dashboard
+Após entrar no sistema, o React envia o JWT no cabeçalho (Bearer Token). Nosso **SecurityFilter (`OncePerRequestFilter`)** intercepta a chamada, valida a assinatura criptográfica e autoriza o carregamento do Dashboard. Gráficos em tempo real mostram as estatísticas protegidas.
 
 ![Dashboard Principal](./public/imagens-do-sistema-rodando/07-dashboard.jpeg)
 
-### 5️⃣ Gestão de Carteira e Blindagem Total Contra Ataques BOLA/IDOR
-Nesta tela sensível de exibição de saldos, o sistema anula completamente a vulnerabilidade de **Ataque BOLA/IDOR (Broken Object Level Authorization)**. O frontend em React não envia um `walletId` de forma arbitrária no corpo da requisição. 
+### 5️⃣ Gestão de Carteira e Saldo
+Nesta área exclusiva, o usuário pode consultar a saúde da sua conta. Graças ao contexto extraído do token pelo **Spring Security**, o backend garante que não ocorram ataques BOLA/IDOR — o usuário só consegue visualizar e iterar com o seu próprio Wallet ID e saldo. O isolamento de contexto é absoluto.
 
-O endpoint privado do backend extrai o ID do usuário diretamente do contexto de segurança autenticado no filtro de rede (`request.getAttribute("UserUnderlineID")`). É impossível que um usuário mal-intencionado altere parâmetros no browser para visualizar ou manipular o saldo de outra pessoa.
+![Saldo e Carteira](./public/imagens-do-sistema-rodando/08-saldo-e-carteira.jpeg)
 
-![Saldo e Carteira Zerada do João](./public/imagens-do-sistema-rodando/08-saldo-e-carteira.jpeg)
-
-### 6️⃣ A Interface de Transações: Depósito Controlado e Escopo ACID
-O menu de depósitos aciona o motor financeiro principal do backend. A requisição trafega o montante desejado até o método `deposit` do `TransactionService`. Toda a operação matemática é processada utilizando a classe **`BigDecimal`** com escala controlada para anular erros de arredondamento de ponto flutuante que ocorrem em tipos primitivos como `double` ou `float`.
+### 6️⃣ A Interface de Transações: Depositando
+Para alimentar a conta recém-criada, o usuário usa o menu de depósitos. A requisição passa novamente pela *eclusa perimetral* de segurança e entra numa operação de banco de dados **ACID** (através da anotação `@Transactional` no Spring).
 
 ![Tela de Depósito](./public/imagens-do-sistema-rodando/09-depositar.jpeg)
 
-A persistência do depósito é síncrona e atômica. O saldo da entidade `WalletEntity` é incrementado usando o método `.add()`, o novo estado é salvo no banco, e uma linha correspondente de auditoria é inserida na tabela `tb_transactions`, retornando um JSON limpo e estruturado com a confirmação para a camada cliente.
+Ao confirmar a transação, o sistema realiza a operação. Se algo falhasse, o Spring aplicaria o *rollback* automático. Sendo bem-sucedido, ele persiste na tabela de forma atômica.
 
 ![Sucesso no Depósito do Usuário 1](./public/imagens-do-sistema-rodando/14-depositando-na-conta-usuario-1.jpeg)
 
-Após a confirmação do commit no PostgreSQL, o frontend atualiza o estado global da aplicação via Zustand, refletindo instantaneamente o novo valor consolidado na carteira a partir de uma fonte de dados imutável.
+Logo em seguida, a carteira do usuário reflete instantaneamente o saldo abastecido, lido com segurança da base de dados.
 
 ![Carteira do Usuário 1 com Saldo](./public/imagens-do-sistema-rodando/16-carteira-do-usuario-1-com-dinheiro.jpeg)
 
-### 7️⃣ Outras Operações: Regras de Negócio e Isolamento de Falhas no Saque
-O endpoint privado `/withdraw` executa validações rigorosas antes de autorizar qualquer saída de capital. O serviço executa uma checagem de limite através de `wallet.getBalance().compareTo(amount) < 0`.
+### 7️⃣ Outras Operações: O Saque
+Assim como o depósito, o usuário tem à disposição o menu de Saque para liquidar recursos, também protegido pelo filtro JWT.
 
 ![Tela de Saque](./public/imagens-do-sistema-rodando/10-sacar.jpeg)
 
-Se o usuário tentar sacar um valor superior ao saldo disponível, a lógica de negócio interrompe a thread imediatamente lançando uma `IllegalStateException`. O nosso `@ControllerAdvice` captura essa falha de runtime e a converte em uma mensagem limpa com HTTP Status 400 (Bad Request), impedindo que códigos de erro internos exponham o esqueleto do banco de dados para o usuário.
+Se o usuário executar um saque e o backend validar o saldo via regra de negócio rigorosa, a dedução é processada de imediato, e a resposta blindada de erros críticos é devolvida ao React.
 
-![Confirmação de Saque Realizado](./public/imagens-do-sistema-rodando/18-saque-realizado.jpeg)
+![Confirmação de Saque](./public/imagens-do-sistema-rodando/18-saque-realizado.jpeg)
 
-### 8️⃣ Interação P2P: Validação de Ambientes Multi-Tenant Isolados
-Para provar a robustez do ecossistema, o perfil da usuária Maria Santos é carregado em uma sessão paralela. O token JWT emitido para a Maria garante acesso exclusivo às suas próprias claims. O painel atesta que a carteira dela nascida no cadastro inicial permanece intocada e isolada de quaisquer movimentações anteriores efetuadas pelo João Silva.
+### 8️⃣ Interação P2P: O Usuário 2 entra em cena
+Enquanto isso, a conta do Usuário 2 foi criada e acessada. Ele nota que sua carteira está completamente isolada e vazia, pronta para receber fundos. A arquitetura de segurança do Spring garante que o perímetro deste usuário seja estritamente isolado do primeiro.
 
 ![Carteira Vazia do Usuário 2](./public/imagens-do-sistema-rodando/15-carteira-do-usuario-2-vazia.jpeg)
 
-### 9️⃣ Orquestrando uma Transferência P2P com Integridade Transacional
-A operação de transferência Peer-to-Peer (P2P) é a operação de maior criticidade do sistema. O usuário de origem insere o UUID da carteira de destino e o valor.
+### 9️⃣ Orquestrando uma Transferência
+Com a necessidade de transferir valores para o Usuário 2, o Usuário 1 acessa o painel de transferência. Informa o Wallet ID do destinatário e o valor desejado.
 
 ![Tela de Transferência](./public/imagens-do-sistema-rodando/11-transferir.jpeg)
 
-Ao clicar em enviar, o backend abre um contexto de isolamento de banco de dados do mais alto nível. O método `transfer` carrega as duas carteiras envolvidas simultaneamente no banco PostgreSQL para realizar as mutações de débito e crédito de forma acorrentada.
+Ele preenche e envia o formulário. Neste momento, o Java abre uma única **transação atômica** para debitar do Usuário 1 e creditar no Usuário 2.
 
 ![Processando a Transferência](./public/imagens-do-sistema-rodando/17-transferindo-para-usuario-2.jpeg)
 
-Graças ao gerenciamento do `@Transactional`, se o servidor sofrer uma queda catastrófica ou perda de conexão exatamente após debitar o dinheiro do João, mas antes de creditar na conta da Maria, o banco de dados desfaz a transação por inteiro (*Rollback*). Isso garante que o dinheiro nunca suma do ecossistema, eliminando problemas de inconsistência de saldo.
+A confirmação instantânea é apresentada na tela. O valor saiu de sua carteira e foi injetado na conta do destino sem risco de concorrência suja!
 
 ![Sucesso na Transferência](./public/imagens-do-sistema-rodando/19-transferido.jpeg)
 
-### 🔟 A Chegada Garantida do Dinheiro e Consistência de Dados
-Após o encerramento com sucesso da transação no backend, o novo estado do banco de dados é consolidado. Ao consultar o seu painel com seu próprio token de acesso criptográfico, a interface da Maria reflete em tempo real o recebimento do valor exato transferido pelo João, sem atrasos e sem risco de leituras sujas (*dirty reads*).
+### 🔟 A Chegada do Dinheiro
+Imediatamente, ao visualizar o seu próprio painel (acessado com seu próprio JWT seguro), o Usuário 2 constata o aumento em seu saldo após receber os recursos do Usuário 1.
 
 ![Carteira do Usuário 2 com Dinheiro](./public/imagens-do-sistema-rodando/20-usuario-2-com-valor.jpeg)
 
-### 1️⃣1️⃣ Transparência e Rastreabilidade: Logs Isolados de Auditoria
-A tabela de histórico de transações consome dados de auditoria imutáveis persistidos no PostgreSQL. Para manter o sigilo bancário dos clientes, as queries executadas no repositório utilizam filtros JPQL dinâmicos baseados no ID extraído do cabeçalho JWT autenticado. Um usuário jamais conseguirá ler o extrato de outro cliente injetando IDs de terceiros.
+### 1️⃣1️⃣ Transparência e Rastreabilidade
+Cada movimentação no ecossistema fica gravada no histórico de transações. Os endpoints de histórico são totalmente fechados, permitindo que cada pessoa veja apenas as movimentações atreladas à sua própria assinatura criptográfica.
 
-A tabela mapeia semanticamente o tipo da operação (`DEPOSIT`, `WITHDRAW`, `TRANSFER`), a data de carimbo do servidor e os valores puros.
+Na tela principal do histórico, listamos as transações em formato de tabela.
 
 ![Acesso ao Menu de Histórico](./public/imagens-do-sistema-rodando/12-historico.jpeg)
 
-Visão detalhada do extrato do João Silva, documentando cronologicamente todas as suas saídas (transferências/saques) e entradas (depósitos).
+Visão do histórico do Usuário 1, com saídas (transferências e saques) e entradas (depósitos).
 
 ![Histórico do Usuário 1](./public/imagens-do-sistema-rodando/22-historico-usuario-1.jpeg)
 
-Visão detalhada do extrato da Maria Santos, documentando a entrada de capital atômico enviada a partir da transação P2P.
+Visão do histórico do Usuário 2, atestando o recebimento da transferência.
 
 ![Histórico do Usuário 2](./public/imagens-do-sistema-rodando/21-historico-usuario-2.jpeg)
 
-### 1️⃣2️⃣ Finalizando o Expediente: Destruição do Token no Lado do Cliente
-A tela de configurações gerencia o encerramento seguro das sessões. Como o backend adota uma arquitetura rigorosamente **Stateless** (sem guardar dados de sessões na memória do servidor para maximizar a performance e o escalonamento vertical em nuvem), o processo de *logout* consiste na destruição completa do token JWT armazenado no LocalStorage do navegador. Sem o token assinado, a eclusa de filtros de rede da API barra automaticamente qualquer nova tentativa de requisição para as rotas internas.
+### 1️⃣2️⃣ Finalizando o Expediente
+O sistema dispõe de uma tela de Configurações onde o usuário pode administrar seu perfil e revogar sua sessão no lado do cliente, removendo o JWT do *storage* local e desativando acessos.
 
 ![Tela de Configurações](./public/imagens-do-sistema-rodando/13-configuracoes.jpeg)
 
@@ -194,48 +188,37 @@ safewallet/
 │   └── ...
 ├── docker-compose.yaml       # Orquestração do PostgreSQL local
 └── README.md
-
 ```
 
 ### Passo a Passo de Inicialização
 
 1. **Clone o repositório e navegue até a raiz:**
-
-```bash
+   ```bash
    git clone https://github.com/GabrielF0900/safewallet-core.git
    cd safewallet
-
-```
+   ```
 
 2. **Inicialize o Banco de Dados PostgreSQL via Docker Compose:**
-
-```bash
+   ```bash
    docker-compose up -d
-
-```
+   ```
 
 3. **Compile e execute o Back-end (Spring Boot):**
-*É obrigatório entrar na subpasta onde reside o arquivo pom.xml para o correto gerenciamento do cache da JVM:*
-
-```bash
+   *É obrigatório entrar na subpasta onde reside o arquivo pom.xml para o correto gerenciamento do cache da JVM:*
+   ```bash
    cd backend
    mvn clean compile spring-boot:run
-
-```
-
-A API inicializará e estará pronta para escutar tráfego na porta padrão `http://localhost:8080`.
+   ```
+   A API inicializará e estará pronta para escutar tráfego na porta padrão `http://localhost:8080`.
 
 4. **Inicialize a Interface Front-end (React):**
-Em um novo terminal na raiz do projeto:
-
-```bash
+   Em um novo terminal na raiz do projeto:
+   ```bash
    cd frontend
    pnpm install
    pnpm run dev
-
-```
-
-O painel web estará acessível em `http://localhost:5173` ou na porta disponibilizada pelo Vite/Next.
+   ```
+   O painel web estará acessível em `http://localhost:5173` ou na porta disponibilizada pelo Vite/Next.
 
 ---
 
@@ -244,55 +227,41 @@ O painel web estará acessível em `http://localhost:5173` ou na porta disponibi
 ### Autenticação Perimetral (`/api/auth`)
 
 #### 🔹 `POST /api/auth/register` — Cadastrar Novo Cliente
-
 **Acesso:** Público (`.permitAll()`)
-
-* **Payload de Entrada (JSON):**
-
-```json
+- **Payload de Entrada (JSON):**
+  ```json
   {
     "name": "Gabriel Falcão",
     "email": "gabriel.falcao@safewallet.com",
     "password": "SenhaForte@2026"
   }
-
-```
-
-* **Payload de Resposta (`201 Created`):**
-
-```json
+  ```
+- **Payload de Resposta (`201 Created`):**
+  ```json
   {
     "id": "a4a1305d-4675-4201-8486-3ef646a61e99",
     "name": "Gabriel Falcão",
     "email": "gabriel.falcao@safewallet.com"
   }
-
-```
+  ```
 
 #### 🔹 `POST /api/auth/login` — Efetuar Login Autenticado
-
 **Acesso:** Público (`.permitAll()`)
-
-* **Payload de Entrada (JSON):**
-
-```json
+- **Payload de Entrada (JSON):**
+  ```json
   {
     "email": "gabriel.falcao@safewallet.com",
     "password": "SenhaForte@2026"
   }
-
-```
-
-* **Payload de Resposta Envelopado (`200 OK`):**
-
-```json
+  ```
+- **Payload de Resposta Envelopado (`200 OK`):**
+  ```json
   {
     "message": "Login efetuado com sucesso!",
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNGExMzA1ZC...[JWT Tuncated]",
     "name": "Gabriel Falcão"
   }
-
-```
+  ```
 
 ---
 
@@ -300,16 +269,14 @@ O painel web estará acessível em `http://localhost:5173` ou na porta disponibi
 
 Toda a arquitetura do software foi intencionalmente modularizada para facilitar deploys elásticos e de alta disponibilidade na nuvem da **AWS**:
 
-* **Segurança e Proteção de Segredos**: As chaves simétricas de assinatura criptográfica mapeadas no arquivo `application.properties` são preparadas para serem sobrescritas em tempo de execução via variáveis de ambiente integradas ao **AWS Secrets Manager** dentro de tarefas do **AWS ECS Fargate**.
-* **Escalabilidade Multi-AZ**: Por ser completamente Stateless, as instâncias deste microsserviço podem ser escaladas horizontalmente por um **Application Load Balancer (ALB)** em múltiplas Zonas de Disponibilidade (AZs) com risco zero de quebra de sessão.
-* **Observabilidade Perimetral**: As respostas capturadas pelo `GlobalExceptionHandler` alimentam as métricas nativas do **Amazon CloudWatch Logs**, permitindo a criação de alarmes automatizados contra tentativas em massa de ataques de força bruta (*Credential Stuffing*).
+- **Segurança e Proteção de Segredos**: As chaves simétricas de assinatura criptográfica mapeadas no arquivo `application.properties` são preparadas para serem sobrescritas em tempo de execução via variáveis de ambiente integradas ao **AWS Secrets Manager** dentro de tarefas do **AWS ECS Fargate**.
+- **Escalabilidade Multi-AZ**: Por ser completamente Stateless, as instâncias deste microsserviço podem ser escaladas horizontalmente por um **Application Load Balancer (ALB)** em múltiplas Zonas de Disponibilidade (AZs) com risco zero de quebra de sessão.
+- **Observabilidade Perimetral**: As respostas capturadas pelo `GlobalExceptionHandler` alimentam as métricas nativas do **Amazon CloudWatch Logs**, permitindo a criação de alarmes automatizados contra tentativas em massa de ataques de força bruta (*Credential Stuffing*).
 
 ---
 
 ## 📄 Licença
-
 Projeto desenvolvido estritamente para fins educacionais, de portfólio técnico e autodesenvolvimento em arquitetura de sistemas críticos.
 
 ---
-
 **Desenvolvido com ❤️ por Gabriel Falcão | 2026**
