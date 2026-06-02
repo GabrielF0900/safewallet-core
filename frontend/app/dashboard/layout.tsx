@@ -24,7 +24,6 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Toaster } from '@/components/ui/sonner'
 
 const navigation = [
   { name: 'Visão Geral', href: '/dashboard', icon: LayoutDashboard },
@@ -181,8 +180,6 @@ export default function DashboardLayout({
           {children}
         </div>
       </main>
-
-      <Toaster position="top-right" richColors />
     </div>
   )
 }
