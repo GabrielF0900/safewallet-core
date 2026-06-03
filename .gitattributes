@@ -1,20 +1,25 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-# --- Otimização para o Java assumir o Card Principal ---
+# --- REGRAS AGRESSIVAS PARA TRAZER O JAVA PARA O TOPO ---
 
-# Se você estiver usando AWS CDK para a Infraestrutura, ignore o output gerado:
-cdk.out/* linguist-vendored
-.cdk.staging/* linguist-vendored
+# 1. Se houver alguma pasta de build, infra ou dependência esquecida, suma com ela
+**/node_modules/* linguist-vendored
+**/dist/* linguist-vendored
+**/build/* linguist-vendored
+**/.next/* linguist-vendored
+**/.out/* linguist-vendored
+**/cdk.out/* linguist-vendored
 
-# Ignorar arquivos de configuração e testes do ecossistema JS/TS (eles pesam muito)
-*.config.ts linguist-vendored
-*.config.js linguist-vendored
-*.test.ts linguist-vendored
-*.spec.ts linguist-vendored
-package-lock.json linguist-vendored
-yarn.lock linguist-vendored
+# 2. Sumir com os componentes densos, estilos e configurações do Front-end/NestJS
+# Isso vai murchar o peso do TypeScript drasticamente
+**/components/* linguist-vendored
+**/ui/* linguist-vendored
+**/styles/* linguist-vendored
+**/*.config.ts linguist-vendored
+**/*.config.js linguist-vendored
 
-# Se houver alguma pasta específica de componentes visuais pesados (ex: shadcn/ui ou build):
-build/* linguist-vendored
-dist/* linguist-vendored
+# 3. Forçar arquivos de propriedades e configurações a não contarem contra o Java
+*.json linguist-vendored
+*.yaml linguist-vendored
+*.yml linguist-vendored
