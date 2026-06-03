@@ -1,14 +1,20 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-# --- Configuração de Equilíbrio do Gráfico ---
+# --- Otimização para o Java assumir o Card Principal ---
 
-# Bloqueia apenas arquivos de fontes, imagens ou travas de pacotes que pesam muito
+# Se você estiver usando AWS CDK para a Infraestrutura, ignore o output gerado:
+cdk.out/* linguist-vendored
+.cdk.staging/* linguist-vendored
+
+# Ignorar arquivos de configuração e testes do ecossistema JS/TS (eles pesam muito)
+*.config.ts linguist-vendored
+*.config.js linguist-vendored
+*.test.ts linguist-vendored
+*.spec.ts linguist-vendored
 package-lock.json linguist-vendored
 yarn.lock linguist-vendored
-pnpm-lock.yaml linguist-vendored
-*.svg linguist-vendored
-*.png linguist-vendored
 
-# Deixamos *.tsx (React), *.css (Tailwind) e *.sql (PostgreSQL) livres 
-# para o GitHub contar o tamanho real deles e exibi-los no gráfico junto com o Java.
+# Se houver alguma pasta específica de componentes visuais pesados (ex: shadcn/ui ou build):
+build/* linguist-vendored
+dist/* linguist-vendored
