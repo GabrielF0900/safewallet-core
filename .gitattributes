@@ -1,2 +1,17 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
+
+# --- Configurações para priorizar o Java no gráfico do GitHub ---
+
+# Ignorar pastas de front-end ou builds (caso existam no projeto)
+frontend/* linguist-vendored
+web/* linguist-vendored
+
+# Ignorar arquivos de outras linguagens para dar peso total ao Java
+*.js linguist-vendored
+*.ts linguist-vendored
+*.tsx linguist-vendored
+*.html linguist-vendored
+*.css linguist-vendored
+*.scss linguist-vendored
+*.json linguist-vendored
