@@ -1,17 +1,14 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-# --- Configurações para priorizar o Java no gráfico do GitHub ---
+# --- Configuração de Equilíbrio do Gráfico ---
 
-# Ignorar pastas de front-end ou builds (caso existam no projeto)
-frontend/* linguist-vendored
-web/* linguist-vendored
+# Bloqueia apenas arquivos de fontes, imagens ou travas de pacotes que pesam muito
+package-lock.json linguist-vendored
+yarn.lock linguist-vendored
+pnpm-lock.yaml linguist-vendored
+*.svg linguist-vendored
+*.png linguist-vendored
 
-# Ignorar arquivos de outras linguagens para dar peso total ao Java
-*.js linguist-vendored
-*.ts linguist-vendored
-*.tsx linguist-vendored
-*.html linguist-vendored
-*.css linguist-vendored
-*.scss linguist-vendored
-*.json linguist-vendored
+# Deixamos *.tsx (React), *.css (Tailwind) e *.sql (PostgreSQL) livres 
+# para o GitHub contar o tamanho real deles e exibi-los no gráfico junto com o Java.
