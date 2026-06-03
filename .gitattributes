@@ -1,25 +1,29 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-# --- REGRAS AGRESSIVAS PARA TRAZER O JAVA PARA O TOPO ---
+# --- Linguist Language Stats Configuration ---
 
-# 1. Se houver alguma pasta de build, infra ou dependência esquecida, suma com ela
-**/node_modules/* linguist-vendored
-**/dist/* linguist-vendored
-**/build/* linguist-vendored
-**/.next/* linguist-vendored
-**/.out/* linguist-vendored
-**/cdk.out/* linguist-vendored
+# Vendor build/dependencies folders
+node_modules/** linguist-vendored
+.next/** linguist-vendored
+dist/** linguist-vendored
+build/** linguist-vendored
+out/** linguist-vendored
+.out/** linguist-vendored
 
-# 2. Sumir com os componentes densos, estilos e configurações do Front-end/NestJS
-# Isso vai murchar o peso do TypeScript drasticamente
-**/components/* linguist-vendored
-**/ui/* linguist-vendored
-**/styles/* linguist-vendored
-**/*.config.ts linguist-vendored
-**/*.config.js linguist-vendored
+# Vendor frontend components (shadcn/ui boilerplate) to balance TypeScript vs Java
+# Usando ** para pegar todos os subdiretórios e arquivos
+frontend/components/ui/** linguist-vendored
+frontend/components/** linguist-vendored
 
-# 3. Forçar arquivos de propriedades e configurações a não contarem contra o Java
+# Vendor some additional config and boilerplate to adjust stats
+frontend/lib/constants/** linguist-vendored
+frontend/lib/formatters.ts linguist-vendored
+
+# Vendor configuration files
+*.config.ts linguist-vendored
+*.config.js linguist-vendored
+*.config.mjs linguist-vendored
 *.json linguist-vendored
 *.yaml linguist-vendored
 *.yml linguist-vendored
