@@ -13,7 +13,7 @@ SafeWallet Core é um **ecossistema de carteira digital completo**, englobando u
 3. [🏗️ Arquitetura do Sistema](#️-arquitetura-do-sistema)
 4. [📸 Demonstração do Sistema (Documentário)](#-demonstração-do-sistema-documentário)
 5. [🚀 Como Executar Localmente](#-como-executar-o-ecossistema-localmente)
-6. [📝 Contratos Principais da API](#-contratos-principais-da-api-endpoints)
+6. [ Documentação da API (OpenAPI / Swagger)](#-documentação-da-api-openapi--swagger)
 7. [☁️ Hospedagem e Infraestrutura AWS](#️-hospedagem-e-infraestrutura-aws-cloud-architecture)
 8. [📄 Licença](#-licença)
 
@@ -38,7 +38,7 @@ O ecossistema do SafeWallet Core resolve esses desafios através de padrões de 
 2. **Eclusa Perimetral Stateless (JWT)**: A autenticação é totalmente baseada em JSON Web Tokens (RFC 7519). Ao realizar login, o servidor assina um passe digital usando o algoritmo HMAC256. A API prova a identidade a cada requisição sem precisar verificar o banco de dados para validar sessões, economizando memória RAM e permitindo escalabilidade instantânea.
 3. **Interceptador Customizado (`OncePerRequestFilter`)**: Desenvolvemos um filtro customizado de rede (`SecurityFilter`) que atua como um leão de chácara. Ele intercepta 100% das requisições para rotas protegidas, limpa o cabeçalho `Authorization Bearer`, decifra o token, valida a assinatura e sua expiração, garantindo a integridade do contexto de segurança (`SecurityContextHolder`) de forma imutável antes que o fluxo alcance as regras de negócio.
 4. **Trituração de Credenciais (BCrypt)**: Aplicação do algoritmo de hashing adaptativo e salting `BCryptPasswordEncoder` para garantir que senhas originais nunca toquem o banco de dados em texto plano.
-5. **Tratamento Resiliente de Exceções Globais**: Uma central de atendimento de falhas (`GlobalExceptionHandler`) que captura desde erros de validação do Jakarta (`@Valid`) até quebras de regras de negócio (`RuntimeException`), blindando metadados e respondendo contratos limpos, evitando o vazamento de detalhes técnicos sensíveis do servidor.
+5. **Tratamento Resiliente de Exceções Globais**: Uma central de atendimento de falhas (`GlobalExceptionHandler`) que captures desde erros de validação do Jakarta (`@Valid`) até quebras de regras de negócio (`RuntimeException`), blindando metadados e respondendo contratos limpos, evitando o vazamento de detalhes técnicos sensíveis do servidor.
 6. **Fluxo de Transações ACID**: Operações de depósito, saque e transferência executadas dentro de transações que garantem consistência de dados e rollback automático em caso de falha.
 7. **Interface Web Reativa e Segura**: Um frontend moderno construído com React e Next.js, garantindo experiência fluida e alinhado com o backend na interceptação de tokens expirados (401 Unauthorized), protegendo ativamente as rotas no lado do cliente.
 
@@ -193,75 +193,64 @@ safewallet/
 ### Passo a Passo de Inicialização
 
 1. **Clone o repositório e navegue até a raiz:**
-   ```bash
-   git clone https://github.com/GabrielF0900/safewallet-core.git
-   cd safewallet
-   ```
+```bash
+git clone [https://github.com/GabrielF0900/safewallet-core.git](https://github.com/GabrielF0900/safewallet-core.git)
+cd safewallet
+
+```
+
 
 2. **Inicialize o Banco de Dados PostgreSQL via Docker Compose:**
-   ```bash
-   docker-compose up -d
-   ```
+```bash
+docker-compose up -d
+
+```
+
 
 3. **Compile e execute o Back-end (Spring Boot):**
-   *É obrigatório entrar na subpasta onde reside o arquivo pom.xml para o correto gerenciamento do cache da JVM:*
-   ```bash
-   cd backend
-   mvn clean compile spring-boot:run
-   ```
-   A API inicializará e estará pronta para escutar tráfego na porta padrão `http://localhost:8080`.
+*É obrigatório entrar na subpasta onde reside o arquivo pom.xml para o correto gerenciamento do cache da JVM:*
+```bash
+cd backend
+mvn clean compile spring-boot:run
 
+```
+
+
+A API inicializará e estará pronta para escutar tráfego na porta padrão `http://localhost:8080`.
 4. **Inicialize a Interface Front-end (React):**
-   Em um novo terminal na raiz do projeto:
-   ```bash
-   cd frontend
-   pnpm install
-   pnpm run dev
-   ```
-   O painel web estará acessível em `http://localhost:5173` ou na porta disponibilizada pelo Vite/Next.
+Em um novo terminal na raiz do projeto:
+```bash
+cd frontend
+pnpm install
+pnpm run dev
+
+```
+
+
+O painel web estará acessível em `http://localhost:5173` ou na porta disponibilizada pelo Vite/Next.
 
 ---
 
-## 📝 Contratos Principais da API (EndPoints)
+## 📖 Documentação da API (OpenAPI / Swagger)
 
-### Autenticação Perimetral (`/api/auth`)
+A especificação de contratos do **SafeWallet Core** adota o padrão de desacoplamento avançado (Clean Architecture / SOLID), onde as metainformações do Swagger foram completamente isoladas das classes controladoras de produção, residindo no pacote especializado `br.com.safewallet.doc.controllers` sob as interfaces `UserApi.java` e `TransactionApi.java`.
 
-#### 🔹 `POST /api/auth/register` — Cadastrar Novo Cliente
-**Acesso:** Público (`.permitAll()`)
-- **Payload de Entrada (JSON):**
-  ```json
-  {
-    "name": "Gabriel Falcão",
-    "email": "gabriel.falcao@safewallet.com",
-    "password": "SenhaForte@2026"
-  }
-  ```
-- **Payload de Resposta (`201 Created`):**
-  ```json
-  {
-    "id": "a4a1305d-4675-4201-8486-3ef646a61e99",
-    "name": "Gabriel Falcão",
-    "email": "gabriel.falcao@safewallet.com"
-  }
-  ```
+### 🚗 Como acessar interativamente em ambiente local
 
-#### 🔹 `POST /api/auth/login` — Efetuar Login Autenticado
-**Acesso:** Público (`.permitAll()`)
-- **Payload de Entrada (JSON):**
-  ```json
-  {
-    "email": "gabriel.falcao@safewallet.com",
-    "password": "SenhaForte@2026"
-  }
-  ```
-- **Payload de Resposta Envelopado (`200 OK`):**
-  ```json
-  {
-    "message": "Login efetuado com sucesso!",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJhNGExMzA1ZC...[JWT Tuncated]",
-    "name": "Gabriel Falcão"
-  }
-  ```
+Com o microsserviço em execução (`mvn spring-boot:run`), a interface gráfica interativa do Swagger UI fica acessível via browser pelo endereço oficial:
+
+👉 http://localhost:8080/swagger-ui/index.html
+
+* **Eclusa Perimetral de Autenticação (JWT):** Para simular movimentações financeiras protegidas (como saque e transferência) diretamente pelo Swagger UI, execute o método de Login no bloco de Autenticação, copie o token JWT retornado no corpo da resposta (`200 OK`), clique no botão **Authorize** (localizado no topo direito com o ícone de cadeado) e cole o hash. O Swagger passará a injetar o cabeçalho HTTP `Authorization Bearer` de forma automatizada em todas as requisições privadas.
+
+### 📦 Como acessar de forma externa e visual (Standalone)
+
+É possível acessar a documentação online de forma visual e iterativa através do site: https://editor.swagger.io/
+
+Para isso, vá na seção de **File -> Import file** (no menu superior esquerdo) e importe o arquivo chamado `api-documentada-safewallet.json` que está no nosso repositório na pasta:
+📂 `safewallet/doc/openapi/api-documentada-safewallet.json`
+
+> 🛠️ **Dica de Engenharia:** Este arquivo portátil atende à especificação padrão global da Linux Foundation. Ele pode ser importado nativamente no **Postman** ou **Insomnia** para gerar automaticamente coleções completas de requisições prontas para testes manuais e de fumaça.
 
 ---
 
@@ -272,7 +261,9 @@ O ecossistema **SafeWallet Core** encontra-se em fase de modelagem de infraestru
 ---
 
 ## 📄 Licença
+
 Projeto desenvolvido estritamente para fins educacionais, de portfólio técnico e autodesenvolvimento em arquitetura de sistemas críticos.
 
 ---
+
 **Desenvolvido com ❤️ por Gabriel Falcão | 2026**
