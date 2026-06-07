@@ -25,7 +25,7 @@ import br.com.safewallet.dto.ApiErrorMessage;
 public interface UserApi {
     @Operation(summary = "Registrar um novo usuário", description = "Criar um novo usuário com as informações fornecidas.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema  (implementation = ApiErrorMessage.class))),
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "409", description = "Conflito - email já registrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
     })
@@ -35,7 +35,7 @@ public interface UserApi {
 
     @Operation(summary = "Autenticar um usuário", description = "Valida as credenciais do usuário e retorna um token JWT válido para acessar recursos protegidos.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Login efetuado com sucesso, token retornado."),
+            @ApiResponse(responseCode = "200", description = "Login efetuado com sucesso, token retornado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = LoginResponseDTO.class))),
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas (e-mail ou senha incorretos).", content = @Content(mediaType = "application/json")),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor.", content = @Content(mediaType = "application/json"))
     })
