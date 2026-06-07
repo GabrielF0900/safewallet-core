@@ -28,16 +28,16 @@ public interface TransactionApi {
 
     @Operation(summary = "Realizar um depósito", description = "Permite que o usuário deposite um valor em sua conta.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Depósito realizado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Depósito realizado com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: valor negativo).", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "401", description = "Não autorizado (usuário não autenticado).", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
     })
     ResponseEntity<TransactionResponseDTO> deposit(@RequestBody DepositRequestDTO depositRequestDTO);
 
-    @Operation(summary = "Realizar um ¼saque", description = "Permite que o usuário saque um valor de sua conta.")
+    @Operation(summary = "Realizar um saque", description = "Permite que o usuário saque um valor de sua conta.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Saque realizado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Saque realizado com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: valor negativo ou saldo insuficiente).", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "401", description = "Não autorizado (usuário não autenticado).", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -46,7 +46,7 @@ public interface TransactionApi {
 
     @Operation(summary = "Realizar uma transferência", description = "Permite que o usuário transfira um valor para outra conta.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Transferência realizada com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Transferência realizada com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: valor negativo, saldo insuficiente ou conta destinatária inexistente).", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "401", description = "Não autorizado (usuário não autenticado).", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
@@ -55,7 +55,7 @@ public interface TransactionApi {
 
     @Operation(summary = "Consultar saldo", description = "Permite que o usuário consulte o saldo de sua conta.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Saldo consultado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Saldo consultado com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponseDTO.class))),
             @ApiResponse(responseCode = "401", description = "Não autorizado (usuário não autenticado).", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "500", description = "Erro interno no servidor.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
     })
@@ -63,14 +63,14 @@ public interface TransactionApi {
 
     @Operation(summary = "Testar autenticação das rotas", description = "Endpoint de telemetria interna para validar a integridade do Token JWT no contexto financeiro.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Filtro de segurança validado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Filtro de segurança validado com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = String.class))),
             @ApiResponse(responseCode = "401", description = "Token ausente, inválido ou expirado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
     })
     ResponseEntity<String> testAuth();
 
     @Operation(summary = "Obter dados consolidados da carteira", description = "Retorna o estado atual da Wallet do usuário autenticado.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Dados da carteira carregados."),
+            @ApiResponse(responseCode = "200", description = "Dados da carteira carregados.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = BalanceResponseDTO.class))),
             @ApiResponse(responseCode = "401", description = "Usuário não autenticado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "500", description = "Erro ao buscar registros da carteira.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
     })
@@ -78,7 +78,7 @@ public interface TransactionApi {
 
     @Operation(summary = "Consultar extrato de transações", description = "Retorna o histórico completo e cronológico de movimentações de débito e crédito.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Extrato gerado com sucesso."),
+            @ApiResponse(responseCode = "200", description = "Extrato gerado com sucesso.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = TransactionHistoryDTO.class))),
             @ApiResponse(responseCode = "401", description = "Acesso perimetral negado.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
             @ApiResponse(responseCode = "500", description = "Falha interna ao processar o histórico.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
     })
