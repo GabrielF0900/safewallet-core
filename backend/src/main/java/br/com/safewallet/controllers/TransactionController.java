@@ -1,5 +1,5 @@
 package br.com.safewallet.controllers;
-
+import br.com.safewallet.doc.controllers.TransactionApi;
 import br.com.safewallet.dto.*;
 import br.com.safewallet.entity.UserEntity;
 import br.com.safewallet.entity.WalletEntity;
@@ -19,17 +19,20 @@ import io.swagger.v3.oas.annotations.Operation;
 @RequestMapping("/api/transactions")
 @RequiredArgsConstructor
 @Tag(name = "TransactionController", description = "Controlador para gerenciamento de transações financeiras.")
-public class TransactionController {
+public class TransactionController implements TransactionApi {
 
     private final TransactionService transactionService;
     private final WalletRepository walletRepository;
 
+
+    @Override
     @GetMapping("/test-auth")
     public ResponseEntity<String> testAuth() {
         UUID userId = extractUserId();
         return ResponseEntity.ok("✅ Autenticado! User ID: " + userId);
     }
 
+    @Override
     @GetMapping("/my-wallet")
     public ResponseEntity<BalanceResponseDTO> getMyWallet() {
         UUID userId = extractUserId();
@@ -38,6 +41,7 @@ public class TransactionController {
         return ResponseEntity.ok(new BalanceResponseDTO(wallet.getBalance(), wallet.getId()));
     }
 
+    @Override
     @GetMapping("/balance")
     public ResponseEntity<BalanceResponseDTO> getBalance() {
         UUID userId = extractUserId();
@@ -46,6 +50,7 @@ public class TransactionController {
         return ResponseEntity.ok(new BalanceResponseDTO(wallet.getBalance(), wallet.getId()));
     }
 
+    @Override
     @GetMapping("/history")
     public ResponseEntity<List<TransactionHistoryDTO>> getHistory() {
         UUID userId = extractUserId();
@@ -53,6 +58,7 @@ public class TransactionController {
         return ResponseEntity.ok(history);
     }
 
+    @Override
     @PostMapping("/deposit")
     public ResponseEntity<TransactionResponseDTO> deposit(@RequestBody @Valid DepositRequestDTO dto) {
         UUID userId = extractUserId();
@@ -60,6 +66,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    @Override
     @PostMapping("/withdraw")
     public ResponseEntity<TransactionResponseDTO> withdraw(@RequestBody @Valid WithdrawRequestDTO dto) {
         UUID userId = extractUserId();
@@ -67,6 +74,7 @@ public class TransactionController {
         return ResponseEntity.ok(response);
     }
 
+    @Override
     @PostMapping("/transfer")
     public ResponseEntity<TransactionResponseDTO> transfer(@RequestBody @Valid TransferRequestDTO dto) {
         UUID sourceUserId = extractUserId();
