@@ -17,13 +17,17 @@ import br.com.safewallet.dto.LoginResponseDTO;
 import br.com.safewallet.dto.UserRequestDTO;
 import br.com.safewallet.dto.UserResponseDTO;
 
+//IMPORTANDO PARA DOCUMENTAR O ESQUEMA DE VALIDAÇÃO DOS CAMPOS DO DTO
+import io.swagger.v3.oas.annotations.media.Schema;
+import br.com.safewallet.dto.ApiErrorMessage;
+
 @Tag(name = "Módulo de Autenticação", description = "Endpoints relacionados à autenticação de usuários, incluindo login e registro.")
 public interface UserApi {
     @Operation(summary = "Registrar um novo usuário", description = "Criar um novo usuário com as informações fornecidas.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content(mediaType = "application/json")),
-            @ApiResponse(responseCode = "409", description = "Conflito - email já registrado", content = @Content(mediaType = "application/json"))
+            @ApiResponse(responseCode = "201", description = "Usuário criado com sucesso", content = @Content(mediaType = "application/json", schema = @Schema  (implementation = ApiErrorMessage.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class))),
+            @ApiResponse(responseCode = "409", description = "Conflito - email já registrado", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiErrorMessage.class)))
     })
     ResponseEntity<UserResponseDTO> registerUser(UserRequestDTO userRequestDTO);
 

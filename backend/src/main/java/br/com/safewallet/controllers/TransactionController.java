@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.UUID;
-import io.swagger.v3.oas.annotations.Operation;
 @RestController
 @RequestMapping("/api/transactions")
 @RequiredArgsConstructor
-@Tag(name = "TransactionController", description = "Controlador para gerenciamento de transações financeiras.")
 public class TransactionController implements TransactionApi {
 
     private final TransactionService transactionService;
