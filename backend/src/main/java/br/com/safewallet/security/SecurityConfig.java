@@ -16,6 +16,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
+    private static final String[] SWAGGER_LIST = {
+        "/swagger-ui/**", //TUDO QUE VIER DEPOIS DE SWAGGER-UI VAI SER LIBERADO
+        "/v3/api-docs/**", //TUDO QUE VIER DEPOIS DE V3/API-DOCS VAI SER LIBERADO
+        "/swagger-resources/**", // LIBERAÇÃO PARA O SWAGGER RESOURCES, QUE É O QUE CARREGA OS CSS E JS DO SWAGGER UI   
+    };
 
     // Injeta o guarda perimetral que você desenvolveu
     public SecurityConfig(SecurityFilter securityFilter) {
@@ -29,6 +34,7 @@ public class SecurityConfig {
                     .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/register").permitAll()
+                        .requestMatchers(SWAGGER_LIST).permitAll() // 🟢 LIBERA O SWAGGER UI
                         .requestMatchers("/error").permitAll() // 🟢 LIBERA A ROTA DE ERRO PRO HANDLER FUNCIONAR
                         .anyRequest().authenticated()
                     )

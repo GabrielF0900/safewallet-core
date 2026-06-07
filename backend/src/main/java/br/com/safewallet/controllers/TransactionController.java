@@ -5,6 +5,7 @@ import br.com.safewallet.entity.UserEntity;
 import br.com.safewallet.entity.WalletEntity;
 import br.com.safewallet.repositories.WalletRepository;
 import br.com.safewallet.services.TransactionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -13,10 +14,11 @@ import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 import java.util.List;
 import java.util.UUID;
-
+import io.swagger.v3.oas.annotations.Operation;
 @RestController
 @RequestMapping("/api/transactions")
 @RequiredArgsConstructor
+@Tag(name = "TransactionController", description = "Controlador para gerenciamento de transações financeiras.")
 public class TransactionController {
 
     private final TransactionService transactionService;

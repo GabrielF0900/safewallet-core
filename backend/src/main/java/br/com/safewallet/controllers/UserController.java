@@ -1,5 +1,5 @@
 package br.com.safewallet.controllers;
-
+import br.com.safewallet.doc.controllers.UserApi;
 import br.com.safewallet.dto.LoginRequestDTO;
 import br.com.safewallet.dto.UserRequestDTO;
 import br.com.safewallet.dto.UserResponseDTO;
@@ -15,9 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import br.com.safewallet.dto.LoginResponseDTO;
 
+
 @RestController
 @RequestMapping("/api/auth")
-public class UserController {
+public class UserController implements UserApi {
 
     private final CreateUserService createUserService;
     private final AuthService authService;
@@ -29,12 +30,14 @@ public class UserController {
         this.tokenService = tokenService;
     }
 
+    @Override
     @PostMapping("/register")
     public ResponseEntity<UserResponseDTO> registerUser(@Valid @RequestBody UserRequestDTO request) {
         UserResponseDTO response = this.createUserService.execute(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Override
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> loginUser(@Valid @RequestBody LoginRequestDTO request) throws Exception {
         System.out.println("🚀 [TELEMETRIA] 1. Requisição de login recebida para o e-mail: " + request.email());
