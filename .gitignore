@@ -27,3 +27,10 @@ Thumbs.db
 *.log
 pnpm-debug.log*
 npm-debug.log*
+
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl

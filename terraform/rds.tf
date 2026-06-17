@@ -44,7 +44,7 @@ resource "aws_secretsmanager_secret_version" "db_credentials_version" {
 resource "aws_db_instance" "postgres" {
   identifier             = "safewallet-db"
   engine                 = "postgres"
-  engine_version         = "15.4" 
+  engine_version         = "15"   # A AWS escolherá a minor version mais recente e segura automaticamente 
   
   # LIMITES DO FREE TIER E STORAGE
   instance_class         = "db.t3.micro" 
@@ -70,10 +70,10 @@ resource "aws_db_instance" "postgres" {
   publicly_accessible    = false 
   
   # MANUTENÇÃO E CICLO DE VIDA
-  backup_retention_period = 7 
-  backup_window           = "03:00-04:00"
+  backup_retention_period = 0 # 0 desativa o backup automático e passa pelo bloqueio do Free Tier
+  # backup_window comentada, pois se não há backup, a AWS não aceita janela de horário
   maintenance_window      = "Mon:04:00-Mon:05:00"
-  skip_final_snapshot     = true 
+  skip_final_snapshot     = true
 
   tags = {
     Name = "safewallet-rds"

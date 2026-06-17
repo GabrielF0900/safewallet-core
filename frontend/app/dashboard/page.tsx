@@ -44,20 +44,51 @@ export default function DashboardPage() {
         setBalance(balanceRes.data.balance)
         setWalletId(balanceRes.data.walletId)
         
-        const txList = transactionsRes.data || []
+        // Jogamos para 'any' temporariamente para podermos higienizar o tipo sem o TS reclamar de 'never'
+        let txList: any = transactionsRes.data;
+
+        // 🛡️ DETECTOR DE HTML: Se a API retornar uma página web (HTML bruto) em vez de dados, descarta
+        if (typeof txList === 'string') {
+          const cleanStr = txList.trim();
+          if (cleanStr.startsWith('<!DOCTYPE') || cleanStr.startsWith('<html')) {
+            console.error("Alerta: A API retornou HTML em vez de um objeto de dados JSON estruturado.");
+            txList = [];
+          }
+        }
+
+        // 🛡️ EXTRATOR: Se o Spring Boot retornou um objeto de paginação (PageImpl), extrai o array do 'content'
+        if (txList && typeof txList === 'object' && 'content' in txList) {
+          txList = txList.content;
+        }
+
+        // Se por algum motivo o JSON válido veio envelopado como string, faz o parse seguro
+        if (typeof txList === 'string') {
+          try {
+            const parsed = JSON.parse(txList);
+            txList = parsed.content || parsed || [];
+          } catch {
+            txList = [];
+          }
+        }
+
+        // Fallback absoluto: garante que se vier null/undefined ou objetos, vire um array vazio
+        if (!Array.isArray(txList)) {
+          txList = [];
+        }
+
         setTransactions(txList)
 
-        // Calculate stats
+        // Calculate stats de forma segura, checando se a propriedade createdAt existe
         const today = new Date().toDateString()
         const todayTx = txList.filter(
-          (tx: Transaction) => new Date(tx.createdAt).toDateString() === today
+          (tx: Transaction) => tx?.createdAt && new Date(tx.createdAt).toDateString() === today
         )
         const transferred = txList
-          .filter((tx: Transaction) => tx.type === 'TRANSFER')
-          .reduce((sum: number, tx: Transaction) => sum + tx.amount, 0)
+          .filter((tx: Transaction) => tx && tx.type === 'TRANSFER')
+          .reduce((sum: number, tx: Transaction) => sum + (tx.amount || 0), 0)
         const deposited = txList
-          .filter((tx: Transaction) => tx.type === 'DEPOSIT')
-          .reduce((sum: number, tx: Transaction) => sum + tx.amount, 0)
+          .filter((tx: Transaction) => tx && tx.type === 'DEPOSIT')
+          .reduce((sum: number, tx: Transaction) => sum + (tx.amount || 0), 0)
 
         setStats({
           todayTransactions: todayTx.length,
@@ -65,6 +96,7 @@ export default function DashboardPage() {
           totalDeposited: deposited,
         })
       } catch (error) {
+        console.error("Erro capturado no carregamento do Dashboard:", error)
         toast.error('Erro ao carregar dados')
       } finally {
         setIsLoading(false)
@@ -74,7 +106,9 @@ export default function DashboardPage() {
     fetchData()
   }, [setBalance, setWalletId, setTransactions])
 
-  const recentTransactions = transactions.slice(0, 5)
+  // 🛡️ Proteção de Runtime: Evita quebras se o estado global sofrer mutações inesperadas
+  const safeTransactions = Array.isArray(transactions) ? transactions : []
+  const recentTransactions = safeTransactions.slice(0, 5)
 
   if (isLoading) {
     return (
@@ -100,7 +134,7 @@ export default function DashboardPage() {
           Olá, {user?.name?.split(' ')[0]}! 👋
         </h1>
         <p className="text-muted-foreground mt-1">
-          Bem-vindo de volta ao SafeWallet. Aqui está seu resumo de hoje.
+          Welcome de volta ao SafeWallet. Aqui está seu resumo de hoje.
         </p>
       </div>
 

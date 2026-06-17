@@ -1,9 +1,17 @@
 # ==========================================
-# 1. BUCKET S3 (Armazenamento Privado)
+# 1. CAPTURA DE INFRAESTRUTURA EXISTENTE (ALB)
+# ==========================================
+
+data "aws_lb" "backend_alb" {
+  arn = "arn:aws:elasticloadbalancing:us-east-1:430597289699:loadbalancer/app/safewallet-alb/d9917a8a77026b17"
+}
+
+# ==========================================
+# 2. BUCKET S3
 # ==========================================
 
 resource "aws_s3_bucket" "frontend" {
-  bucket = "safewallet-frontend-static-prod" # Lembrete: Alterar para um nome único globalmente
+  bucket = "safewallet-frontend-static-prod" 
   
   tags = {
     Name        = "safewallet-frontend"
@@ -11,7 +19,6 @@ resource "aws_s3_bucket" "frontend" {
   }
 }
 
-# CORREÇÃO 1: Versionamento habilitado (Proteção contra deleções acidentais/Ransomware)
 resource "aws_s3_bucket_versioning" "frontend_versioning" {
   bucket = aws_s3_bucket.frontend.id
   versioning_configuration {
@@ -19,7 +26,6 @@ resource "aws_s3_bucket_versioning" "frontend_versioning" {
   }
 }
 
-# CORREÇÃO 2: Criptografia em repouso habilitada por padrão (AES256 - Gratuito)
 resource "aws_s3_bucket_server_side_encryption_configuration" "frontend_encryption" {
   bucket = aws_s3_bucket.frontend.id
   rule {
@@ -29,7 +35,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "frontend_encrypti
   }
 }
 
-# Bloqueio total de acesso público direto ao Bucket S3
 resource "aws_s3_bucket_public_access_block" "frontend_block" {
   bucket                  = aws_s3_bucket.frontend.id
   block_public_acls       = true
@@ -39,7 +44,7 @@ resource "aws_s3_bucket_public_access_block" "frontend_block" {
 }
 
 # ==========================================
-# 2. ORIGIN ACCESS CONTROL (Segurança de Borda)
+# 3. ORIGIN ACCESS CONTROL
 # ==========================================
 
 resource "aws_cloudfront_origin_access_control" "frontend_oac" {
@@ -51,14 +56,27 @@ resource "aws_cloudfront_origin_access_control" "frontend_oac" {
 }
 
 # ==========================================
-# 3. DISTRIBUIÇÃO CLOUDFRONT (CDN Global)
+# 4. DISTRIBUIÇÃO CLOUDFRONT
 # ==========================================
 
 resource "aws_cloudfront_distribution" "frontend_distribution" {
+  
   origin {
     domain_name              = aws_s3_bucket.frontend.bucket_regional_domain_name
     origin_id                = "S3-${aws_s3_bucket.frontend.id}"
     origin_access_control_id = aws_cloudfront_origin_access_control.frontend_oac.id
+  }
+
+  origin {
+    domain_name = data.aws_lb.backend_alb.dns_name 
+    origin_id   = "Custom-Spring-Backend"
+
+    custom_origin_config {
+      http_port                = 80
+      https_port               = 443
+      origin_protocol_policy   = "http-only"
+      origin_ssl_protocols     = ["TLSv1.2"]
+    }
   }
 
   enabled             = true
@@ -81,12 +99,30 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
     allowed_methods  = ["GET", "HEAD"]
     cached_methods   = ["GET", "HEAD"]
     target_origin_id = "S3-${aws_s3_bucket.frontend.id}"
+    cache_policy_id  = "658327ea-f89d-4fab-a63d-7e88639e58f6" 
+    viewer_protocol_policy = "redirect-to-https"
+  }
 
-    # CORREÇÃO 3: Remoção do bloco depreciado (forwarded_values)
-    # Uso da Policy Gerenciada pela AWS 'Managed-CachingOptimized'
-    cache_policy_id = "658327ea-f89d-4fab-a63d-7e88639e58f6" 
+  # 💡 CORREÇÃO: Uso de 'forwarded_values' para evitar erros de Policy ID inexistente
+  ordered_cache_behavior {
+    path_pattern     = "/api/*"
+    allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
+    cached_methods   = ["GET", "HEAD"]
+    target_origin_id = "Custom-Spring-Backend" 
 
     viewer_protocol_policy = "redirect-to-https"
+
+    forwarded_values {
+      query_string = true
+      headers      = ["Authorization", "Content-Type", "Accept"]
+      cookies {
+        forward = "all"
+      }
+    }
+    
+    min_ttl                = 0
+    default_ttl            = 0
+    max_ttl                = 0
   }
 
   restrictions {
@@ -98,14 +134,10 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
-
-  tags = {
-    Name = "safewallet-cloudfront"
-  }
 }
 
 # ==========================================
-# 4. S3 BUCKET POLICY (Permissão Estrita)
+# 5. S3 BUCKET POLICY
 # ==========================================
 
 data "aws_iam_policy_document" "frontend_policy" {
@@ -113,15 +145,13 @@ data "aws_iam_policy_document" "frontend_policy" {
     sid       = "AllowCloudFrontServicePrincipal"
     actions   = ["s3:GetObject"]
     resources = ["${aws_s3_bucket.frontend.arn}/*"]
-    
     principals {
       type        = "Service"
       identifiers = ["cloudfront.amazonaws.com"]
     }
-    
     condition {
       test     = "StringEquals"
-      variable = "aws:SourceArn" # CORREÇÃO 4: Case-sensitive rigoroso
+      variable = "aws:SourceArn" 
       values   = [aws_cloudfront_distribution.frontend_distribution.arn]
     }
   }
