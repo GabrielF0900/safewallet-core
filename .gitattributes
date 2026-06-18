@@ -1,50 +1,78 @@
+# ============================================================
+# .gitattributes — Controle de EOL + GitHub Linguist
+# Ordem alvo: 1º Java · 2º TypeScript · 3º HCL · 4º Dockerfile
+# ============================================================
+
+# --- EOL ---
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-# ========================================================
-# --- Configuração Estratégica do GitHub Linguist ---
-# --- Alvo: 1º Java | 2º TypeScript | 3º HCL | 4º Docker ---
-# ========================================================
+# ============================================================
+# 1. ☕ JAVA — 1º LUGAR
+# src/**/*.java já conta nativamente; mvnw reforça a contagem.
+# ATENÇÃO: NÃO vendorize *.json de forma global aqui —
+# o openapi-safewallet.json precisa sobreviver para somar bytes.
+# ============================================================
+src/**/*.java          linguist-language=Java linguist-vendored=false
+mvnw                   linguist-language=Java linguist-vendored=false
+openapi-safewallet.json linguist-language=Java linguist-generated=false
 
-# 0. LIXO E ESTÁTICOS (Eliminando Ruído)
-# ATENÇÃO: No Git, a última regra que der match ganha. Logo, essas regras genéricas DEVEM ficar no topo.
-*.html linguist-vendored=true
-*.js linguist-vendored=true
-*.json linguist-vendored=true
-frontend/**/*.css linguist-vendored=true
-frontend/**/*.scss linguist-vendored=true
+# pom.xml é XML puro — o Linguist não aceita reclassificá-lo como Java.
+# Melhor escondê-lo para não diluir a contagem.
+pom.xml                linguist-documentation=true
 
-# 1. 🚀 JAVA SOBERANO (1º Lugar)
-# Força a leitura do arquivo Swagger/OpenAPI como Java. Sendo um arquivo pesado, garante o topo.
-*safewallet*.json linguist-language=Java linguist-generated=false
-backend/**/*.json linguist-language=Java linguist-generated=false
-mvnw linguist-language=Java linguist-vendored=false
+# ============================================================
+# 2. 🔷 TYPESCRIPT — 2º LUGAR
+# Mantemos os .ts/.tsx do src; vendorizamos tudo que é build/lock.
+# ============================================================
+frontend/src/**/*.ts   linguist-language=TypeScript linguist-vendored=false
+frontend/src/**/*.tsx  linguist-language=TypeScript linguist-vendored=false
 
-# 2. TYPESCRIPT SOB MEDIDA (2º Lugar)
-# Ocultamos os arquivos de lock e build (que inflariam o TS para o 1º lugar),
-# mas mantemos componentes, hooks e libs visíveis para garantir a 2ª posição de forma sólida.
-frontend/.next/** linguist-vendored=true
-frontend/out/** linguist-vendored=true
-frontend/package-lock.json linguist-vendored=true
-frontend/pnpm-lock.yaml linguist-vendored=true
-frontend/yarn.lock linguist-vendored=true
-*.config.ts linguist-vendored=true
-node_modules/** linguist-vendored=true
+frontend/.next/**              linguist-vendored=true
+frontend/out/**                linguist-vendored=true
+frontend/package-lock.json     linguist-vendored=true
+frontend/pnpm-lock.yaml        linguist-vendored=true
+frontend/yarn.lock             linguist-vendored=true
+*.config.ts                    linguist-vendored=true
+node_modules/**                linguist-vendored=true
 
-# 3. 🏗️ AUMENTANDO O PESO DO HCL (Terraform em 3º)
-# Além dos arquivos .tf normais, forçamos o arquivo de LOCK (.terraform.lock.hcl) a contar como código.
-# O lock file costuma ser bem grande e vai dar um "boost" artificial excelente na porcentagem.
-**/*.tf linguist-language=HCL linguist-generated=false
-**/*.lock.hcl linguist-language=HCL linguist-generated=false
+# ============================================================
+# 3. 🏗️ HCL / TERRAFORM — 3º LUGAR
+# O .terraform.lock.hcl costuma ser pesado — não vendorize.
+# ============================================================
+terraform/**/*.tf              linguist-language=HCL linguist-vendored=false
+terraform/.terraform.lock.hcl  linguist-language=HCL linguist-generated=false
 
-# 4. 🐳 DOCKER COM PORCENTAGEM LEGAL (4º Lugar)
-# Forçamos o GitHub a ler tudo relacionado a containers (Compose, Dockerfile, ignore) como Dockerfile.
-*docker-compose*.y*ml linguist-language=Dockerfile linguist-vendored=false
-Dockerfile* linguist-language=Dockerfile linguist-vendored=false
-.dockerignore linguist-language=Dockerfile linguist-vendored=false
+# ============================================================
+# 4. 🐳 DOCKERFILE — 4º LUGAR
+# Dockerfile* e Compose ficam abaixo do HCL em volume.
+# ============================================================
+Dockerfile*                    linguist-language=Dockerfile linguist-vendored=false
+docker-compose*.yaml           linguist-language=Dockerfile linguist-vendored=false
+docker-compose*.yml            linguist-language=Dockerfile linguist-vendored=false
+.dockerignore                  linguist-language=Dockerfile
 
-# 6. OCULTAR DOCUMENTOS (Para não diluir as porcentagens tech)
-levantamento-de-requisitos/** linguist-documentation=true
-arquitetura/** linguist-documentation=true
-public/** linguist-vendored=true
-README.md linguist-documentation=true
+# ============================================================
+# 5. 🔇 ELIMINAÇÃO DE RUÍDO
+# HTML, JS, CSS e JSON genéricos fora do openapi.
+# IMPORTANTE: *.json aqui é aplicado DEPOIS da regra do openapi
+# acima — o Linguist usa a última regra que bate no arquivo,
+# então inverta a ordem se seu Linguist for sensível a isso.
+# ============================================================
+*.html                         linguist-vendored=true
+*.js                           linguist-vendored=true
+frontend/**/*.css              linguist-vendored=true
+frontend/**/*.scss             linguist-vendored=true
+
+# JSON genérico (lock files, configs) — mas NÃO o openapi acima.
+# Se o seu openapi estiver na raiz, essa glob não o afeta.
+frontend/**/*.json             linguist-vendored=true
+**/package.json                linguist-vendored=true
+
+# ============================================================
+# 6. 📚 DOCUMENTAÇÃO / DIAGRAMAS
+# ============================================================
+levantamento-de-requisitos/**  linguist-documentation=true
+arquitetura/**                 linguist-documentation=true
+public/**                      linguist-vendored=true
+README.md                      linguist-documentation=true
