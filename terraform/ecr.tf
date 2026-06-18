@@ -1,13 +1,12 @@
 # ==========================================
-# ELASTIC CONTAINER REGISTRY (ECR)
+# 6. ELASTIC CONTAINER REGISTRY (ECR)
 # ==========================================
 
 resource "aws_ecr_repository" "backend" {
   name                 = "safewallet-backend"
-  image_tag_mutability = "MUTABLE" # Permite sobrescrever a tag 'latest' durante os testes
+  image_tag_mutability = "MUTABLE"
+  force_delete         = true # 🛡️ Força a remoção de todas as imagens Docker internas
 
-  # Segurança: A AWS vai escanear sua imagem Docker em busca de vulnerabilidades (CVEs)
-  # toda vez que você fizer um push.
   image_scanning_configuration {
     scan_on_push = true
   }
@@ -15,10 +14,10 @@ resource "aws_ecr_repository" "backend" {
   tags = {
     Name = "safewallet-ecr"
   }
-} # <-- ATENÇÃO: Esta é a chave de fechamento do resource que estava faltando!
+}
 
 # ==========================================
-# OUTPUTS (Retorno no Terminal)
+# 7. OUTPUTS (Retorno no Terminal)
 # ==========================================
 
 output "ecr_repository_url" {

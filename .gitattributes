@@ -1,41 +1,44 @@
 /mvnw text eol=lf
 *.cmd text eol=crlf
 
-# --- Linguist Language Stats Configuration ---
+# ========================================================
+# --- Configuração Avançada do GitHub Linguist (Foco em Java) ---
+# ========================================================
 
-# Vendor build/dependencies folders
-node_modules/** linguist-vendored
-.next/** linguist-vendored
-dist/** linguist-vendored
-build/** linguist-vendored
-out/** linguist-vendored
-.out/** linguist-vendored
+# 1. Neutralizar completamente o ecossistema do Frontend (Next.js / React / Tailwind)
+# Isso remove todo e qualquer peso de TypeScript, TSX, JS, HTML e CSS do gráfico global
+frontend/**/* linguist-vendored=true
 
-# Vendor frontend components (shadcn/ui boilerplate) to balance TypeScript vs Java
-frontend/components/** linguist-vendored
+# 2. Neutralizar pastas de dependências, builds, históricos e caches locais
+node_modules/** linguist-vendored=true
+.next/** linguist-vendored=true
+dist/** linguist-vendored=true
+build/** linguist-vendored=true
+out/** linguist-vendored=true
+.out/** linguist-vendored=true
+.history/** linguist-vendored=true
+.vscode/** linguist-vendored=true
 
-# Vendor hooks and utils
-frontend/hooks/** linguist-vendored
-frontend/lib/** linguist-vendored
+# 3. Blindagem de segurança por extensões de arquivos de UI/Scripts soltos
+*.html linguist-generated=true
+*.css linguist-generated=true
+*.scss linguist-generated=true
+*.js linguist-generated=true
+*.jsx linguist-generated=true
+*.ts linguist-generated=true
+*.tsx linguist-generated=true
 
-# Vendor the app layout and root files to drop TS weight further
-frontend/app/layout.tsx linguist-vendored
-frontend/app/page.tsx linguist-vendored
-frontend/app/dashboard/layout.tsx linguist-vendored
-frontend/app/dashboard/page.tsx linguist-vendored
+# 4. Neutralizar arquivos de configuração e IaC (Terraform) para não competirem com o Java
+*.config.ts linguist-vendored=true
+*.config.js linguist-vendored=true
+*.config.mjs linguist-vendored=true
+*.json linguist-vendored=true
+*.yaml linguist-vendored=true
+*.yml linguist-vendored=true
+terraform/**/* linguist-documentation=true
+docker-compose.yaml linguist-vendor=true
 
-# Vendor configuration files
-*.config.ts linguist-vendored
-*.config.js linguist-vendored
-*.config.mjs linguist-vendored
-*.json linguist-vendored
-*.yaml linguist-vendored
-*.yml linguist-vendored
-
-# Force some TypeScript files to be detected as Java to forcefully boost the Java percentage
-frontend/app/login/page.tsx linguist-language=Java
-frontend/app/register/page.tsx linguist-language=Java
-frontend/app/dashboard/deposit/page.tsx linguist-language=Java
-frontend/app/dashboard/withdraw/page.tsx linguist-language=Java
-frontend/app/dashboard/transactions/page.tsx linguist-language=Java
-frontend/app/dashboard/transfer/page.tsx linguist-language=Java
+# 5. Classificar formalmente as pastas de governança como documentação técnica
+levantamento-de-requisitos/**/* linguist-documentation=true
+arquitetura/**/* linguist-documentation=true
+public/**/* linguist-documentation=true

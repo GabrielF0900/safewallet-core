@@ -1,17 +1,18 @@
 # ==========================================
-# 1. CAPTURA DE INFRAESTRUTURA EXISTENTE (ALB)
+# 1. CAPTURA DE INFRAESTRUTURA EXISTENTE (ALB) - MOCKADO PARA O DESTROY
 # ==========================================
-
-data "aws_lb" "backend_alb" {
-  arn = "arn:aws:elasticloadbalancing:us-east-1:430597289699:loadbalancer/app/safewallet-alb/d9917a8a77026b17"
-}
+# 💡 Comentamos o data block porque o ALB já foi destruído na AWS, evitando o erro de "couldn't find resource"
+# data "aws_lb" "backend_alb" {
+#   arn = "arn:aws:elasticloadbalancing:us-east-1:430597289699:loadbalancer/app/safewallet-alb/d9917a8a77026b17"
+# }
 
 # ==========================================
 # 2. BUCKET S3
 # ==========================================
 
 resource "aws_s3_bucket" "frontend" {
-  bucket = "safewallet-frontend-static-prod" 
+  bucket        = "safewallet-frontend-static-prod" 
+  force_destroy = true # 🛡️ Força a deleção limpando todos os arquivos e versões de dentro
   
   tags = {
     Name        = "safewallet-frontend"
@@ -68,7 +69,9 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
   }
 
   origin {
-    domain_name = data.aws_lb.backend_alb.dns_name 
+    # 💡 CORREÇÃO FINOPS: Como o ALB não existe mais, usamos um DNS genérico temporário
+    # apenas para passar na validação de contrato do Terraform e concluir o destroy.
+    domain_name = "safewallet-mock-alb.amazonaws.com" 
     origin_id   = "Custom-Spring-Backend"
 
     custom_origin_config {
@@ -103,7 +106,6 @@ resource "aws_cloudfront_distribution" "frontend_distribution" {
     viewer_protocol_policy = "redirect-to-https"
   }
 
-  # 💡 CORREÇÃO: Uso de 'forwarded_values' para evitar erros de Policy ID inexistente
   ordered_cache_behavior {
     path_pattern     = "/api/*"
     allowed_methods  = ["GET", "HEAD", "OPTIONS", "PUT", "POST", "PATCH", "DELETE"]
