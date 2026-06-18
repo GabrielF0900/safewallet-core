@@ -8,13 +8,48 @@
 *.cmd text eol=crlf
 
 # ============================================================
+# 0. 🔇 ELIMINAÇÃO DE RUÍDO TOTAL (Regras Globais no Topo)
+# ============================================================
+# JavaScript
+*.js                            linguist-vendored=true
+*.jsx                           linguist-vendored=true
+*.mjs                           linguist-vendored=true
+*.cjs                           linguist-vendored=true
+
+# CSS/SCSS
+*.css                           linguist-vendored=true
+*.scss                          linguist-vendored=true
+*.sass                          linguist-vendored=true
+
+# HTML e JSON genéricos
+*.html                          linguist-vendored=true
+*.json                          linguist-vendored=true
+
+# Locks e configs
+*.lock                          linguist-vendored=true
+*.yaml                          linguist-vendored=true
+*.yml                           linguist-vendored=true
+
+# Documentação
+levantamento-de-requisitos/**   linguist-documentation=true
+arquitetura/**                  linguist-documentation=true
+public/**                       linguist-vendored=true
+README.md                       linguist-documentation=true
+*.md                            linguist-documentation=true
+
+# Vendorizar frontend inteiro por padrão (liberamos apenas o código real depois)
+frontend/**                     linguist-vendored=true
+
+# ============================================================
 # 1. ☕ JAVA — 1º LUGAR
 # Forçamos o openapi (JSON grande) a ser lido como Java.
 # Todos os .java do backend contam normalmente.
 # ============================================================
 src/**/*.java                   linguist-language=Java linguist-vendored=false linguist-detectable=true
-mvnw                            linguist-language=Java linguist-vendored=false
-openapi-safewallet.json         linguist-language=Java linguist-generated=false linguist-vendored=false linguist-detectable=true
+backend/src/**/*.java           linguist-language=Java linguist-vendored=false linguist-detectable=true
+mvnw                            linguist-language=Java linguist-vendored=false linguist-detectable=true
+*safewallet*.json               linguist-language=Java linguist-generated=false linguist-vendored=false linguist-detectable=true
+backend/**/*.json               linguist-language=Java linguist-generated=false linguist-vendored=false linguist-detectable=true
 
 # ============================================================
 # 2. 🔷 TYPESCRIPT — 2º LUGAR
@@ -24,58 +59,15 @@ openapi-safewallet.json         linguist-language=Java linguist-generated=false 
 frontend/src/**/*.ts            linguist-language=TypeScript linguist-vendored=false
 frontend/src/**/*.tsx           linguist-language=TypeScript linguist-vendored=false
 
-# Vendorizar TODO o resto do frontend
-frontend/**                     linguist-vendored=true
-frontend/src/**/*.ts            linguist-vendored=false
-frontend/src/**/*.tsx           linguist-vendored=false
-
 # ============================================================
 # 3. 🏗️ HCL / TERRAFORM — 3º LUGAR
 # ============================================================
-terraform/**/*.tf               linguist-language=HCL linguist-vendored=false linguist-detectable=true
-terraform/.terraform.lock.hcl   linguist-language=HCL linguist-generated=false linguist-vendored=false linguist-detectable=true
+**/*.tf                         linguist-language=HCL linguist-vendored=false linguist-detectable=true
+**/*.lock.hcl                   linguist-language=HCL linguist-generated=false linguist-vendored=false linguist-detectable=true
 
 # ============================================================
 # 4. 🐳 DOCKERFILE — 4º LUGAR
 # ============================================================
 Dockerfile*                     linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yaml            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-.dockerignore                   linguist-language=Dockerfile linguist-detectable=true
-
-# ============================================================
-# 5. 🔇 ELIMINAÇÃO DE RUÍDO TOTAL
-# ============================================================
-# JavaScript — eliminar completamente
-*.js                            linguist-vendored=true
-*.jsx                           linguist-vendored=true
-*.mjs                           linguist-vendored=true
-*.cjs                           linguist-vendored=true
-
-# CSS/SCSS — eliminar completamente
-*.css                           linguist-vendored=true
-*.scss                          linguist-vendored=true
-*.sass                          linguist-vendored=true
-
-# HTML gerado — eliminar
-*.html                          linguist-vendored=true
-
-# JSON genérico — eliminar (exceto o openapi que já foi mapeado acima)
-*.json                          linguist-vendored=true
-openapi-safewallet.json         linguist-language=Java linguist-generated=false linguist-vendored=false linguist-detectable=true
-
-# Locks e configs de pacote
-*.lock                          linguist-vendored=true
-*.yaml                          linguist-vendored=true
-*.yml                           linguist-vendored=true
-docker-compose*.yaml            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-
-# ============================================================
-# 6. 📚 DOCUMENTAÇÃO / DIAGRAMAS
-# ============================================================
-levantamento-de-requisitos/**   linguist-documentation=true
-arquitetura/**                  linguist-documentation=true
-public/**                       linguist-vendored=true
-README.md                       linguist-documentation=true
-*.md                            linguist-documentation=true
+*docker-compose*.y*ml           linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+.dockerignore                   linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
