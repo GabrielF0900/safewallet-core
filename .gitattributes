@@ -25,6 +25,9 @@ pom.xml                         linguist-vendored=true
 
 # Ocultar todo o frontend por padrão para derrubar a porcentagem do TypeScript
 frontend/**                     linguist-vendored=true
+# Neutralizar as "baleias" do repositório (arquivos de lock) para equilibrar as porcentagens
+*lock*                          linguist-vendored=true
+*.lock                          linguist-vendored=true
 
 # ============================================================
 # 1. ☕ JAVA — 1º LUGAR
@@ -32,24 +35,24 @@ frontend/**                     linguist-vendored=true
 backend/src/**/*.java           linguist-language=Java linguist-vendored=false linguist-detectable=true
 backend/mvnw                    linguist-language=Java linguist-vendored=false linguist-detectable=true
 backend/src/main/resources/**   linguist-language=Java linguist-vendored=false linguist-detectable=true
-# O SEGREDO: O pnpm-lock.yaml é enorme. O Github ignora locks por padrão (generated=true).
-# Forçamos generated=false para que o Java absorva todo esse peso gigantesco e vire o número 1!
-frontend/pnpm-lock.yaml         linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
+# O arquivo Swagger OpenAPI base no root ajuda a segurar o Java no topo (junto com o mvnw)
+openapi-safewallet.json         linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
 
 # ============================================================
 # 2. 🔷 TYPESCRIPT — 2º LUGAR
 # ============================================================
-# Resgatamos apenas a pasta 'app' do vendor global, deixando o TS pequeno mas em 2º
+# Resgatamos as pastas 'app' e 'components' para aumentar a porcentagem do TS um pouco
 frontend/app/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
 frontend/app/**/*.tsx           linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/components/**/*.ts     linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/components/**/*.tsx    linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
 
 # ============================================================
 # 3. 🏗️ HCL — 3º LUGAR
 # ============================================================
 terraform/**/*.tf               linguist-language=HCL linguist-vendored=false linguist-detectable=true
 terraform/.terraform.lock.hcl   linguist-language=HCL linguist-vendored=false linguist-generated=false linguist-detectable=true
-# Passamos os pesados arquivos OpenAPI / Swagger para o HCL para inflar seu peso
-*safewallet*.json               linguist-language=HCL linguist-vendored=false linguist-generated=false linguist-detectable=true
+# Usamos o Swagger interno do backend para inflar bem a porcentagem do HCL
 backend/**/*.json               linguist-language=HCL linguist-vendored=false linguist-generated=false linguist-detectable=true
 
 # ============================================================
@@ -61,6 +64,6 @@ frontend/Dockerfile*            linguist-language=Dockerfile linguist-vendored=f
 docker-compose*.yaml            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
 docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
 .dockerignore                   linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-# Caso existam outros locks grandes, usamos para garantir o 4º lugar
-frontend/package-lock.json      linguist-language=Dockerfile linguist-vendored=false linguist-generated=false linguist-detectable=true
-frontend/yarn.lock              linguist-language=Dockerfile linguist-vendored=false linguist-generated=false linguist-detectable=true
+# O script mvnw.cmd e o package.json somam alguns KBs para tirar o Dockerfile do 0.3%
+backend/mvnw.cmd                linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+frontend/package.json           linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
