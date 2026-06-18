@@ -16,12 +16,17 @@ openapi-safewallet.json         linguist-language=Java linguist-vendored=false l
 
 # ============================================================
 # 2. 🔷 TYPESCRIPT — 2º LUGAR
-# NÃO vendorizamos o frontend inteiro — listamos o lixo explicitamente
+# Caminhos reais: frontend/app/ e frontend/components/
 # ============================================================
-frontend/src/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/src/**/*.tsx           linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/**/*.tsx           linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/components/**/*.ts     linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/components/**/*.tsx    linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/lib/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/hooks/**/*.ts          linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/types/**/*.ts          linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
 
-# Lixo do frontend — vendorizar explicitamente
+# Lixo do frontend — vendorizar
 frontend/.next/**               linguist-vendored=true
 frontend/out/**                 linguist-vendored=true
 frontend/dist/**                linguist-vendored=true
@@ -32,8 +37,6 @@ frontend/yarn.lock              linguist-vendored=true
 frontend/next.config.*          linguist-vendored=true
 frontend/tailwind.config.*      linguist-vendored=true
 frontend/postcss.config.*       linguist-vendored=true
-frontend/*.config.ts            linguist-vendored=true
-frontend/*.config.js            linguist-vendored=true
 frontend/public/**              linguist-vendored=true
 
 # ============================================================
