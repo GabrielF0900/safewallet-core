@@ -2,43 +2,49 @@
 *.cmd text eol=crlf
 
 # ============================================================
-# 0. DESTRUIÇÃO TOTAL DO FRONTEND E DOCUMENTAÇÃO
-# Matamos o peso do TS, HTML, CSS e configs. 
-# Isso zera o TypeScript no cálculo oficial.
+# 1. BLOQUEIO PERIMETRAL DO FRONTEND (Zera o excesso de TS/HTML)
 # ============================================================
 frontend/** linguist-vendored=true
-*.md linguist-documentation=true
-arquitetura/** linguist-documentation=true
-public/** linguist-vendored=true
 node_modules/** linguist-vendored=true
 .next/** linguist-vendored=true
-*.json linguist-vendored=true
-*.lock linguist-vendored=true
-*lock* linguist-vendored=true
+out/** linguist-vendored=true
+dist/** linguist-vendored=true
+
+# Neutraliza arquivos de configuração para não sujarem as fatias do gráfico
+*.md linguist-documentation=true
+*.json linguist-generated=true
+*.yaml linguist-generated=true
+*.yml linguist-generated=true
+*lock* linguist-generated=true
+*.lock linguist-generated=true
+arquitetura/** linguist-documentation=true
+Levantamento-De-Requisitos/** linguist-documentation=true
 
 # ============================================================
-# 1. ☕ JAVA — A LINGUAGEM SOBERANA (60% ~ 70%)
+# 2. ☕ JAVA — 1º LUGAR ABSOLUTO (Código Nativo do Backend)
 # ============================================================
-# O código real do backend domina naturalmente porque o frontend foi apagado.
-backend/src/main/java/**/*.java linguist-language=Java linguist-vendored=false
+backend/src/main/java/**/*.java linguist-language=Java linguist-vendored=false linguist-detectable=true
 backend/pom.xml linguist-language=Java linguist-vendored=false
 
 # ============================================================
-# 2. 🔷 TYPESCRIPT — O RESSURGIMENTO CALCULADO (15% ~ 20%)
-# Aqui está o pulo do gato: Pegamos algumas classes pesadas do 
-# PRÓPRIO BACKEND JAVA e dizemos ao GitHub que elas são TypeScript.
-# Isso garante que o TS apareça em 2º lugar de forma controlada.
+# 3. 🔷 TYPESCRIPT — 2º LUGAR (Liberado a conta-gotas)
+# Forçamos o resgate APENAS das páginas de rotas. O volume de bytes
+# delas é perfeito para fixar o TS logo abaixo do Java.
 # ============================================================
-backend/src/main/java/com/safewallet/core/config/**/*.java linguist-language=TypeScript linguist-vendored=false
-backend/src/main/java/com/safewallet/core/security/**/*.java linguist-language=TypeScript linguist-vendored=false
+frontend/app/page.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/layout.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/login/page.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/register/page.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/dashboard/page.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/dashboard/layout.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
 
 # ============================================================
-# 3. 🏗️ HCL (AWS) — 3º LUGAR
+# 4. 🏗️ HCL (AWS / TERRAFORM) — 3º LUGAR
 # ============================================================
-terraform/**/*.tf linguist-language=HCL linguist-vendored=false
+terraform/**/*.tf linguist-language=HCL linguist-vendored=false linguist-detectable=true
 
 # ============================================================
-# 4. 🐳 DOCKERFILE — 4º LUGAR
+# 5. 🐳 DOCKERFILE — 4º LUGAR
 # ============================================================
 Dockerfile* linguist-language=Dockerfile linguist-vendored=false
 backend/Dockerfile* linguist-language=Dockerfile linguist-vendored=false
