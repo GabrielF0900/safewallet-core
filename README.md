@@ -54,7 +54,7 @@ O ecossistema do SafeWallet Core resolve esses desafios através de padrões de 
 
 ### Visão Geral da Arquitetura Cloud-Native
 
-![Arquitetura SafeWallet Core](./public/arquitetura/ArquiteturaFoto.jpeg)
+![Arquitetura SafeWallet Core](./arquitetura/ArquiteturaFoto.jpeg)
 
 A arquitetura acima representa a estrutura completa do SafeWallet Core, orquestrado na AWS com alta disponibilidade, isolamento de segurança em múltiplas camadas e escalabilidade horizontal garantida. Cada componente foi selecionado seguindo os **pilares do Well Architected Framework**, com ênfase em **Excelência Operacional**, **Segurança**, **Confiabilidade** e **Otimização de Custos**.
 
@@ -273,7 +273,7 @@ Acompanhe abaixo a jornada de implantação e configuração de cada componente 
 
 A primeira camada da arquitetura é o **CloudFront**, o serviço de Content Delivery Network (CDN) da AWS. Ele garante que o frontend da aplicação seja servido a partir de edge locations geograficamente próximas do usuário, reduzindo latência e acelerando o carregamento de assets estáticos.
 
-![CloudFront Distribution - Configuração Principal](./public/arquitetura/03-cloudfront.jpeg)
+![CloudFront Distribution - Configuração Principal](./public/imagens-da-infraestrutura-cloud/03-cloudfront.jpeg)
 
 Na imagem acima, vemos a distribuição CloudFront **`safewallet-frontend-cdn`** em operação. Este serviço:
 
@@ -286,7 +286,7 @@ Na imagem acima, vemos a distribuição CloudFront **`safewallet-frontend-cdn`**
 
 ### 🔗 Origens e Roteamento Inteligente
 
-![CloudFront Origins - Configuração de Roteamento](./public/arquitetura/04-cloudfront-02.jpeg)
+![CloudFront Origins - Configuração de Roteamento](./public/imagens-da-infraestrutura-cloud/04-cloudfront-02.jpeg)
 
 O CloudFront está configurado com **2 origens inteligentes**:
 
@@ -301,7 +301,7 @@ Isso garante que requisições para a API REST sejam automaticamente roteadas pa
 
 ### 🏗️ Orquestração de Containers: ECS Fargate
 
-![ECS Cluster - Visão das Tarefas em Execução](./public/arquitetura/01-ecs.jpeg)
+![ECS Cluster - Visão das Tarefas em Execução](./public/imagens-da-infraestrutura-cloud/01-ecs.jpeg)
 
 O **Amazon Elastic Container Service (ECS)** com **Fargate** é o coração computacional do SafeWallet. Diferentemente de gerenciar instâncias EC2 manualmente, o Fargate oferece:
 
@@ -319,7 +319,7 @@ Quando um usuário realiza uma transferência sensível, essa requisição pode 
 
 ### ⚖️ Balanceamento de Carga: Target Groups
 
-![ALB Target Groups - Destinos Registrados](./public/arquitetura/02-target-group.jpeg)
+![ALB Target Groups - Destinos Registrados](./public/imagens-da-infraestrutura-cloud/02-target-group.jpeg)
 
 O **Application Load Balancer (ALB)** utiliza **Target Groups** para distribuir tráfego de forma inteligente entre as tarefas ECS. A imagem mostra:
 
@@ -341,7 +341,7 @@ O **Application Load Balancer (ALB)** utiliza **Target Groups** para distribuir 
 
 ### 🗄️ Persistência: Amazon RDS (PostgreSQL)
 
-![RDS Database - Configuração e Status](./public/arquitetura/05-rds.jpeg)
+![RDS Database - Configuração e Status](./public/imagens-da-infraestrutura-cloud/05-rds.jpeg)
 
 O **Amazon Relational Database Service (RDS)** gerencia o **PostgreSQL 15** que armazena todos os dados do SafeWallet. Na imagem, observamos:
 
