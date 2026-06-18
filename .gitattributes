@@ -3,44 +3,49 @@
 
 # ========================================================
 # --- Configuração Estratégica do GitHub Linguist ---
-# --- Alvo: Java Soberano em 1º, mantendo TS, HCL, Docker e CSS ---
+# --- Alvo: 1º Java | 2º TypeScript | 3º HCL | 4º Docker ---
 # ========================================================
 
-# 1. LIMPEZA GERAL DE LIXO E ESTÁTICOS (Matando os 37% de HTML)
-# Ignora todo HTML gerado e arquivos de dependência do gráfico
-*.html linguist-vendored=true
-*.json linguist-vendored=true
-*.js linguist-vendored=true
-*.config.ts linguist-vendored=true
-node_modules/** linguist-vendored=true
-frontend/out/** linguist-vendored=true
+# 1. 🚀 JAVA SOBERANO (1º Lugar)
+# Força a leitura do arquivo Swagger/OpenAPI como Java. Sendo um arquivo pesado, garante o topo.
+# Adicionamos o script mvnw para somar alguns bytes extras como garantia.
+openapi-safewallet.json linguist-language=Java linguist-generated=false
+mvnw linguist-language=Java linguist-vendored=false
+
+# 2. TYPESCRIPT SOB MEDIDA (2º Lugar)
+# Ocultamos os arquivos de lock e build (que inflariam o TS para o 1º lugar),
+# mas mantemos componentes, hooks e libs visíveis para garantir a 2ª posição de forma sólida.
 frontend/.next/** linguist-vendored=true
+frontend/out/** linguist-vendored=true
 frontend/package-lock.json linguist-vendored=true
 frontend/pnpm-lock.yaml linguist-vendored=true
 frontend/yarn.lock linguist-vendored=true
+*.config.ts linguist-vendored=true
+node_modules/** linguist-vendored=true
 
-# 2. DIMINUIR O TYPESCRIPT PELA METADE
-# Oculta os componentes e utilitários de UI, deixando as páginas principais 
-# (pasta app/) assumirem a representação do React/TS no gráfico.
-frontend/components/** linguist-vendored=true
-frontend/lib/** linguist-vendored=true
-frontend/hooks/** linguist-vendored=true
-
-# 3. 🚀 O TRUQUE DEFINITIVO PARA O JAVA ASSUMIR O TOPO
-# O arquivo OpenAPI/Swagger do backend é massivo em bytes. 
-# Ao forçar a leitura dele como Java, ele vai esmagar as outras linguagens e assumir o 1º lugar.
-openapi-safewallet.json linguist-language=Java linguist-generated=false
-
-# 4. MANTER AS OUTRAS TECNOLOGIAS VISÍVEIS (Infraestrutura)
-# AWS (HCL)
+# 3. 🏗️ AUMENTANDO O PESO DO HCL (Terraform em 3º)
+# Além dos arquivos .tf normais, forçamos o arquivo de LOCK (.terraform.lock.hcl) a contar como código.
+# O lock file costuma ser bem grande e vai dar um "boost" artificial excelente na porcentagem.
 terraform/*.tf linguist-language=HCL
-# Docker
-docker-compose.yaml linguist-language=Dockerfile linguist-vendored=false
-# Tailwind (CSS)
-frontend/**/*.css linguist-language=CSS
-frontend/**/*.scss linguist-language=CSS
+terraform/.terraform.lock.hcl linguist-language=HCL linguist-generated=false
 
-# 5. OCULTAR DOCUMENTOS (Para não diluir a porcentagem)
+# 4. 🐳 DOCKER COM PORCENTAGEM LEGAL (4º Lugar)
+# Forçamos o GitHub a ler tudo relacionado a containers (Compose, Dockerfile, ignore) como Dockerfile.
+docker-compose*.yaml linguist-language=Dockerfile linguist-vendored=false
+docker-compose*.yml linguist-language=Dockerfile linguist-vendored=false
+Dockerfile* linguist-language=Dockerfile linguist-vendored=false
+.dockerignore linguist-language=Dockerfile
+
+# 5. LIXO, ESTÁTICOS E CSS (Eliminando Ruído)
+# Para HCL e Docker brilharem, precisamos matar o CSS e arquivos estáticos que roubam porcentagem.
+*.html linguist-vendored=true
+*.js linguist-vendored=true
+*.json linguist-vendored=true
+frontend/**/*.css linguist-vendored=true
+frontend/**/*.scss linguist-vendored=true
+
+# 6. OCULTAR DOCUMENTOS (Para não diluir as porcentagens tech)
 levantamento-de-requisitos/** linguist-documentation=true
 arquitetura/** linguist-documentation=true
 public/** linguist-vendored=true
+README.md linguist-documentation=true
