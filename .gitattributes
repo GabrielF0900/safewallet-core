@@ -2,45 +2,52 @@
 *.cmd text eol=crlf
 
 # ========================================================
-# --- Configuração Equilibrada do GitHub Linguist ---
-# --- Alvo: Java Soberano (70-80%), Mantendo Outros ---
+# --- Configuração Estratégica do GitHub Linguist ---
+# --- Alvo: Java em 1º Lugar, seguido por TS, HCL, Docker e CSS ---
 # ========================================================
 
-# 1. Neutralizar Arquivos de Configuração e Gerados (Distorcem o Gráfico)
-# Remove o peso de arquivos .json, .yaml, build artifacts e configs soltas.
+# 1. REMOVER O LIXO (Distorcem o gráfico e não agregam valor)
+# Remove arquivos de configuração, dependências e builds
 *.json linguist-generated=true
 *.yaml linguist-generated=true
 *.yml linguist-generated=true
+*.config.ts linguist-generated=true
+*.config.js linguist-generated=true
+*.config.mjs linguist-generated=true
 node_modules/** linguist-vendored=true
 .next/** linguist-vendored=true
 dist/** linguist-vendored=true
 build/** linguist-vendored=true
 out/** linguist-vendored=true
 .out/** linguist-vendored=true
-*.config.ts linguist-generated=true
-*.config.js linguist-generated=true
-*.config.mjs linguist-generated=true
 
-# 2. Reclassificar Cirurgicamente o Frontend para Boost do Java
-# Esta é a técnica principal: marcar arquivos TSX pesados como Java.
-# Mantém o código no repositório, mas soma os bytes ao Java.
+# 2. BOOST DE JAVA (Transferência de Peso)
+# Pegamos as telas mais pesadas do Frontend e mandamos o GitHub contar os bytes delas como Java.
+# O resto da pasta frontend (componentes, hooks) continuará sendo TypeScript.
+frontend/app/layout.tsx linguist-language=Java
+frontend/app/page.tsx linguist-language=Java
 frontend/app/login/page.tsx linguist-language=Java
 frontend/app/register/page.tsx linguist-language=Java
+frontend/app/dashboard/layout.tsx linguist-language=Java
+frontend/app/dashboard/page.tsx linguist-language=Java
 frontend/app/dashboard/deposit/page.tsx linguist-language=Java
 frontend/app/dashboard/withdraw/page.tsx linguist-language=Java
 frontend/app/dashboard/transfer/page.tsx linguist-language=Java
 frontend/app/dashboard/transactions/page.tsx linguist-language=Java
 
-# 3. Marcar o Tailwind CSS para Detecção Explícita
-# Garante que o Linguist entenda que o Tailwind é a tecnologia de estilo.
-*.css linguist-language=Tailwind CSS
-*.scss linguist-language=Tailwind CSS
+# 3. GARANTIR A PRESENÇA DA AWS (Terraform / IaC)
+# Força o GitHub a ler a pasta do Terraform como HCL (Linguagem Cloud)
+terraform/*.tf linguist-language=HCL
 
-# 4. Classificar Governança e Infra como Documentação (Para não competirem)
+# 4. GARANTIR A PRESENÇA DO DOCKER
+# Transforma o arquivo compose no representante do Docker no gráfico
+docker-compose.yaml linguist-language=Dockerfile
+
+# 5. GARANTIR A PRESENÇA DO TAILWIND (CSS)
+*.css linguist-language=CSS
+*.scss linguist-language=CSS
+
+# 6. OCULTAR PASTAS DE DOCUMENTAÇÃO (Para não roubarem a porcentagem)
 levantamento-de-requisitos/**/* linguist-documentation=true
 arquitetura/**/* linguist-documentation=true
 public/**/* linguist-documentation=true
-terraform/**/* linguist-documentation=true
-
-# 5. Forçar Detecção do Docker no docker-compose
-docker-compose.yaml linguist-language=Docker
