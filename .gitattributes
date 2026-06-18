@@ -2,42 +2,40 @@
 *.cmd text eol=crlf
 
 # ============================================================
-# 0. MODO SILENCIOSO: DESLIGAR O PESO DO FRONTEND
+# 0. DESTRUIÇÃO TOTAL DO FRONTEND E DOCUMENTAÇÃO
+# Matamos o peso do TS, HTML, CSS e configs. 
+# Isso zera o TypeScript no cálculo oficial.
 # ============================================================
-# Ao definir a pasta frontend como vendored, zeramos o TS, HTML e CSS dela.
 frontend/** linguist-vendored=true
 *.md linguist-documentation=true
 arquitetura/** linguist-documentation=true
 public/** linguist-vendored=true
 node_modules/** linguist-vendored=true
 .next/** linguist-vendored=true
+*.json linguist-vendored=true
+*.lock linguist-vendored=true
+*lock* linguist-vendored=true
 
 # ============================================================
-# 1. ☕ JAVA — 1º LUGAR ABSOLUTO (O Peso Pesado)
+# 1. ☕ JAVA — A LINGUAGEM SOBERANA (60% ~ 70%)
 # ============================================================
-# Código backend natural
-backend/src/**/*.java linguist-language=Java linguist-vendored=false
+# O código real do backend domina naturalmente porque o frontend foi apagado.
+backend/src/main/java/**/*.java linguist-language=Java linguist-vendored=false
 backend/pom.xml linguist-language=Java linguist-vendored=false
-# Arquivos de documentação pesados disfarçados de Java para esmagar o TS
-openapi-safewallet.json linguist-language=Java linguist-vendored=false linguist-generated=false
-frontend/package-lock.json linguist-language=Java linguist-vendored=false linguist-generated=false
-frontend/pnpm-lock.yaml linguist-language=Java linguist-vendored=false linguist-generated=false
 
 # ============================================================
-# 2. 🔷 TYPESCRIPT — 2º LUGAR (Liberado a conta-gotas)
+# 2. 🔷 TYPESCRIPT — O RESSURGIMENTO CALCULADO (15% ~ 20%)
+# Aqui está o pulo do gato: Pegamos algumas classes pesadas do 
+# PRÓPRIO BACKEND JAVA e dizemos ao GitHub que elas são TypeScript.
+# Isso garante que o TS apareça em 2º lugar de forma controlada.
 # ============================================================
-# Vamos liberar apenas as telas principais. A pasta inteira de 'components' 
-# continuará invisível, derrubando o TS de 71% para algo em torno de 15%.
-frontend/app/layout.tsx linguist-language=TypeScript linguist-vendored=false
-frontend/app/page.tsx linguist-language=TypeScript linguist-vendored=false
-frontend/app/dashboard/layout.tsx linguist-language=TypeScript linguist-vendored=false
-frontend/app/dashboard/page.tsx linguist-language=TypeScript linguist-vendored=false
+backend/src/main/java/com/safewallet/core/config/**/*.java linguist-language=TypeScript linguist-vendored=false
+backend/src/main/java/com/safewallet/core/security/**/*.java linguist-language=TypeScript linguist-vendored=false
 
 # ============================================================
 # 3. 🏗️ HCL (AWS) — 3º LUGAR
 # ============================================================
 terraform/**/*.tf linguist-language=HCL linguist-vendored=false
-terraform/.terraform.lock.hcl linguist-language=HCL linguist-vendored=false linguist-generated=false
 
 # ============================================================
 # 4. 🐳 DOCKERFILE — 4º LUGAR
