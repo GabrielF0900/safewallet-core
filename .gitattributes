@@ -2,41 +2,43 @@
 *.cmd text eol=crlf
 
 # ============================================================
-# 1. BLOQUEIO PERIMETRAL DO FRONTEND (Zera o excesso de TS/HTML)
+# 1. LIMPEZA CIRÚRGICA DE EXCESSO DE BYTES
+# Em vez de bloquear o frontend inteiro, bloqueamos apenas o lixo
+# e as pastas pesadas de componentes para o TS não estourar 70%.
 # ============================================================
-frontend/** linguist-vendored=true
-node_modules/** linguist-vendored=true
-.next/** linguist-vendored=true
-out/** linguist-vendored=true
-dist/** linguist-vendored=true
-
-# Neutraliza arquivos de configuração para não sujarem as fatias do gráfico
-*.md linguist-documentation=true
+*.html linguist-vendored=true
 *.json linguist-generated=true
 *.yaml linguist-generated=true
 *.yml linguist-generated=true
-*lock* linguist-generated=true
 *.lock linguist-generated=true
+*lock* linguist-generated=true
+
+# Oculta o peso das bibliotecas de UI (onde o TypeScript acumula peso excessivo)
+frontend/components/** linguist-vendored=true
+frontend/lib/** linguist-vendored=true
+frontend/hooks/** linguist-vendored=true
+frontend/.next/** linguist-vendored=true
+frontend/out/** linguist-vendored=true
+node_modules/** linguist-vendored=true
+
+# Documentações e anexos
+*.md linguist-documentation=true
 arquitetura/** linguist-documentation=true
 Levantamento-De-Requisitos/** linguist-documentation=true
 
 # ============================================================
-# 2. ☕ JAVA — 1º LUGAR ABSOLUTO (Código Nativo do Backend)
+# 2. ☕ JAVA — 1º LUGAR ABSOLUTO (Motor Principal)
 # ============================================================
 backend/src/main/java/**/*.java linguist-language=Java linguist-vendored=false linguist-detectable=true
 backend/pom.xml linguist-language=Java linguist-vendored=false
 
 # ============================================================
-# 3. 🔷 TYPESCRIPT — 2º LUGAR (Liberado a conta-gotas)
-# Forçamos o resgate APENAS das páginas de rotas. O volume de bytes
-# delas é perfeito para fixar o TS logo abaixo do Java.
+# 3. 🔷 TYPESCRIPT — 2º LUGAR ESTÁVEL
+# Deixando apenas a pasta 'app' visível, o GitHub lerá apenas as suas
+# páginas reativas. O peso em bytes é perfeito para fixar o TS abaixo do Java.
 # ============================================================
-frontend/app/page.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/layout.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/login/page.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/register/page.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/dashboard/page.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/dashboard/layout.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/**/*.ts linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/**/*.tsx linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
 
 # ============================================================
 # 4. 🏗️ HCL (AWS / TERRAFORM) — 3º LUGAR
