@@ -10,48 +10,63 @@ backend/mvnw text eol=lf
 # ============================================================
 # 1. ☕ JAVA — 1º LUGAR
 # ============================================================
-backend/src/**/*.java  linguist-language=Java linguist-vendored=false linguist-detectable=true
-backend/mvnw           linguist-language=Java linguist-vendored=false linguist-detectable=true
-openapi-safewallet.json linguist-language=Java linguist-vendored=false linguist-detectable=true
+backend/src/**/*.java           linguist-language=Java linguist-vendored=false linguist-detectable=true
+backend/mvnw                    linguist-language=Java linguist-vendored=false linguist-detectable=true
+openapi-safewallet.json         linguist-language=Java linguist-vendored=false linguist-detectable=true
 
 # ============================================================
 # 2. 🔷 TYPESCRIPT — 2º LUGAR
-# Vendorizamos TODO o frontend, depois escapamos só o src real
+# NÃO vendorizamos o frontend inteiro — listamos o lixo explicitamente
 # ============================================================
-frontend/**                    linguist-vendored=true
-frontend/src/**/*.ts           linguist-vendored=false linguist-language=TypeScript linguist-detectable=true
-frontend/src/**/*.tsx          linguist-vendored=false linguist-language=TypeScript linguist-detectable=true
+frontend/src/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/src/**/*.tsx           linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+
+# Lixo do frontend — vendorizar explicitamente
+frontend/.next/**               linguist-vendored=true
+frontend/out/**                 linguist-vendored=true
+frontend/dist/**                linguist-vendored=true
+frontend/node_modules/**        linguist-vendored=true
+frontend/package-lock.json      linguist-vendored=true
+frontend/pnpm-lock.yaml         linguist-vendored=true
+frontend/yarn.lock              linguist-vendored=true
+frontend/next.config.*          linguist-vendored=true
+frontend/tailwind.config.*      linguist-vendored=true
+frontend/postcss.config.*       linguist-vendored=true
+frontend/*.config.ts            linguist-vendored=true
+frontend/*.config.js            linguist-vendored=true
+frontend/public/**              linguist-vendored=true
 
 # ============================================================
 # 3. 🏗️ HCL — 3º LUGAR
 # ============================================================
-terraform/**/*.tf              linguist-language=HCL linguist-vendored=false linguist-detectable=true
-terraform/.terraform.lock.hcl  linguist-language=HCL linguist-vendored=false linguist-detectable=true
+terraform/**/*.tf               linguist-language=HCL linguist-vendored=false linguist-detectable=true
+terraform/.terraform.lock.hcl   linguist-language=HCL linguist-vendored=false linguist-detectable=true
 
 # ============================================================
 # 4. 🐳 DOCKERFILE — 4º LUGAR
 # ============================================================
-Dockerfile*             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yaml    linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yml     linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-.dockerignore           linguist-language=Dockerfile linguist-detectable=true
+Dockerfile*                     linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+backend/Dockerfile*             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+frontend/Dockerfile*            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+docker-compose*.yaml            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+.dockerignore                   linguist-language=Dockerfile linguist-detectable=true
 
 # ============================================================
-# 5. 🔇 ELIMINAÇÃO DE RUÍDO — arquivos na raiz e backend
+# 5. 🔇 ELIMINAÇÃO DE RUÍDO
 # ============================================================
-*.html                         linguist-vendored=true
-*.js                           linguist-vendored=true
-*.mjs                          linguist-vendored=true
-*.css                          linguist-vendored=true
-*.scss                         linguist-vendored=true
-*.md                           linguist-documentation=true
-*.lock                         linguist-vendored=true
-pom.xml                        linguist-vendored=true
+*.md                            linguist-documentation=true
+*.html                          linguist-vendored=true
+*.js                            linguist-vendored=true
+*.mjs                           linguist-vendored=true
+*.css                           linguist-vendored=true
+*.scss                          linguist-vendored=true
+pom.xml                         linguist-vendored=true
 
 # ============================================================
 # 6. 📚 DOCUMENTAÇÃO
 # ============================================================
-Levantamento-De-Requisitos/**  linguist-documentation=true
-arquitetura/**                 linguist-documentation=true
-public/**                      linguist-vendored=true
-README.md                      linguist-documentation=true
+Levantamento-De-Requisitos/**   linguist-documentation=true
+arquitetura/**                  linguist-documentation=true
+public/**                       linguist-vendored=true
+README.md                       linguist-documentation=true
