@@ -1,6 +1,6 @@
 # ============================================================
 # .gitattributes — EOL + GitHub Linguist
-# Ordem: 1º Java · 2º TypeScript · 3º HCL · 4º Dockerfile
+# Ordem Alvo: 1º Java (Alto) · 2º TypeScript (Baixo) · 3º HCL · 4º Dockerfile
 # ============================================================
 
 # --- EOL ---
@@ -8,57 +8,14 @@ backend/mvnw text eol=lf
 *.cmd        text eol=crlf
 
 # ============================================================
-# 1. ☕ JAVA — 1º LUGAR
-# ============================================================
-backend/src/**/*.java           linguist-language=Java linguist-vendored=false linguist-detectable=true
-backend/mvnw                    linguist-language=Java linguist-vendored=false linguist-detectable=true
-openapi-safewallet.json         linguist-language=Java linguist-vendored=false linguist-detectable=true
-
-# ============================================================
-# 2. 🔷 TYPESCRIPT — 2º LUGAR
-# Caminhos reais: frontend/app/ e frontend/components/
-# ============================================================
-frontend/app/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/**/*.tsx           linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/components/**/*.ts     linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/components/**/*.tsx    linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/lib/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/hooks/**/*.ts          linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/types/**/*.ts          linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-
-# Lixo do frontend — vendorizar
-frontend/.next/**               linguist-vendored=true
-frontend/out/**                 linguist-vendored=true
-frontend/dist/**                linguist-vendored=true
-frontend/node_modules/**        linguist-vendored=true
-frontend/package-lock.json      linguist-vendored=true
-frontend/pnpm-lock.yaml         linguist-vendored=true
-frontend/yarn.lock              linguist-vendored=true
-frontend/next.config.*          linguist-vendored=true
-frontend/tailwind.config.*      linguist-vendored=true
-frontend/postcss.config.*       linguist-vendored=true
-frontend/public/**              linguist-vendored=true
-
-# ============================================================
-# 3. 🏗️ HCL — 3º LUGAR
-# ============================================================
-terraform/**/*.tf               linguist-language=HCL linguist-vendored=false linguist-detectable=true
-terraform/.terraform.lock.hcl   linguist-language=HCL linguist-vendored=false linguist-detectable=true
-
-# ============================================================
-# 4. 🐳 DOCKERFILE — 4º LUGAR
-# ============================================================
-Dockerfile*                     linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-backend/Dockerfile*             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-frontend/Dockerfile*            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yaml            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-.dockerignore                   linguist-language=Dockerfile linguist-detectable=true
-
-# ============================================================
-# 5. 🔇 ELIMINAÇÃO DE RUÍDO
+# 0. 🔇 ELIMINAÇÃO DE RUÍDO & DOCUMENTAÇÃO (No Topo)
+# No Git a última regra vence. Regras globais ficam no topo.
 # ============================================================
 *.md                            linguist-documentation=true
+Levantamento-De-Requisitos/**   linguist-documentation=true
+arquitetura/**                  linguist-documentation=true
+public/**                       linguist-vendored=true
+README.md                       linguist-documentation=true
 *.html                          linguist-vendored=true
 *.js                            linguist-vendored=true
 *.mjs                           linguist-vendored=true
@@ -67,9 +24,53 @@ docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=f
 pom.xml                         linguist-vendored=true
 
 # ============================================================
-# 6. 📚 DOCUMENTAÇÃO
+# 1. ☕ JAVA — 1º LUGAR
 # ============================================================
-Levantamento-De-Requisitos/**   linguist-documentation=true
-arquitetura/**                  linguist-documentation=true
-public/**                       linguist-vendored=true
-README.md                       linguist-documentation=true
+backend/src/**/*.java           linguist-language=Java linguist-vendored=false linguist-detectable=true
+backend/mvnw                    linguist-language=Java linguist-vendored=false linguist-detectable=true
+openapi-safewallet.json         linguist-language=Java linguist-vendored=false linguist-detectable=true
+backend/src/main/resources/**   linguist-language=Java linguist-vendored=false linguist-detectable=true
+# Usamos os pesados arquivos de build para impulsionar o Java para o topo
+frontend/out/**                 linguist-language=Java linguist-vendored=false linguist-detectable=true
+frontend/.next/**               linguist-language=Java linguist-vendored=false linguist-detectable=true
+
+# ============================================================
+# 2. 🔷 TYPESCRIPT — 2º LUGAR (Porcentagem Reduzida)
+# ============================================================
+frontend/app/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/**/*.tsx           linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+
+# Ocultamos todo o restante do frontend para derrubar a porcentagem do TS
+frontend/components/**          linguist-vendored=true
+frontend/lib/**                 linguist-vendored=true
+frontend/hooks/**               linguist-vendored=true
+frontend/types/**               linguist-vendored=true
+
+# Lixo do frontend — vendorizar
+frontend/dist/**                linguist-vendored=true
+frontend/node_modules/**        linguist-vendored=true
+frontend/next.config.*          linguist-vendored=true
+frontend/tailwind.config.*      linguist-vendored=true
+frontend/postcss.config.*       linguist-vendored=true
+frontend/public/**              linguist-vendored=true
+
+# ============================================================
+# 3. 🏗️ HCL — 3º LUGAR (Aumentado artificialmente)
+# ============================================================
+terraform/**/*.tf               linguist-language=HCL linguist-vendored=false linguist-detectable=true
+terraform/.terraform.lock.hcl   linguist-language=HCL linguist-vendored=false linguist-detectable=true
+# Lemos o pnpm-lock (arquivo gigante) como HCL para inflar o peso
+frontend/pnpm-lock.yaml         linguist-language=HCL linguist-vendored=false linguist-detectable=true
+
+# ============================================================
+# 4. 🐳 DOCKERFILE — 4º LUGAR (Aumentado artificialmente)
+# ============================================================
+Dockerfile*                     linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+backend/Dockerfile*             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+frontend/Dockerfile*            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+docker-compose*.yaml            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+.dockerignore                   linguist-language=Dockerfile linguist-detectable=true
+# Usamos os outros locks gigantes para inflar o Dockerfile
+frontend/package-lock.json      linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+frontend/yarn.lock              linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
