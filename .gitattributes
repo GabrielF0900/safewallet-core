@@ -3,31 +3,36 @@
 
 # ========================================================
 # --- Configuração Estratégica do GitHub Linguist ---
-# --- Alvo: Java em 1º, seguido por TS, HCL (AWS), Docker e CSS ---
+# --- Alvo: Java Soberano em 1º, mantendo TS, HCL, Docker e CSS ---
 # ========================================================
 
-# 1. ELIMINAR O HTML (O vilão dos 39%)
-# Remove o peso de páginas estáticas geradas pelo Next.js
+# 1. LIMPEZA GERAL DE LIXO E ESTÁTICOS (Matando os 37% de HTML)
+# Ignora todo HTML gerado e arquivos de dependência do gráfico
 *.html linguist-vendored=true
-frontend/out/** linguist-vendored=true
-frontend/.next/** linguist-vendored=true
-
-# 2. LIMPAR LIXO DE CONFIGURAÇÃO
-# Impede que ficheiros JSON e JS genéricos sujem o gráfico
-node_modules/** linguist-vendored=true
 *.json linguist-vendored=true
 *.js linguist-vendored=true
 *.config.ts linguist-vendored=true
+node_modules/** linguist-vendored=true
+frontend/out/** linguist-vendored=true
+frontend/.next/** linguist-vendored=true
+frontend/package-lock.json linguist-vendored=true
+frontend/pnpm-lock.yaml linguist-vendored=true
+frontend/yarn.lock linguist-vendored=true
 
-# 3. 🚀 O TRUQUE DE MESTRE PARA O JAVA DOMINAR ABSOLUTAMENTE
-# Forçamos o GitHub a contar o lockfile gigante do frontend como Java.
-# A flag 'linguist-generated=false' obriga-o a contabilizar estes megabytes.
-frontend/pnpm-lock.yaml linguist-language=Java linguist-generated=false
-frontend/package-lock.json linguist-language=Java linguist-generated=false
-frontend/yarn.lock linguist-language=Java linguist-generated=false
+# 2. DIMINUIR O TYPESCRIPT PELA METADE
+# Oculta os componentes e utilitários de UI, deixando as páginas principais 
+# (pasta app/) assumirem a representação do React/TS no gráfico.
+frontend/components/** linguist-vendored=true
+frontend/lib/** linguist-vendored=true
+frontend/hooks/** linguist-vendored=true
 
-# 4. GARANTIR A PRESENÇA DA AWS, DOCKER E TAILWIND (CSS)
-# AWS é representada pela linguagem HCL do Terraform
+# 3. 🚀 O TRUQUE DEFINITIVO PARA O JAVA ASSUMIR O TOPO
+# O arquivo OpenAPI/Swagger do backend é massivo em bytes. 
+# Ao forçar a leitura dele como Java, ele vai esmagar as outras linguagens e assumir o 1º lugar.
+openapi-safewallet.json linguist-language=Java linguist-generated=false
+
+# 4. MANTER AS OUTRAS TECNOLOGIAS VISÍVEIS (Infraestrutura)
+# AWS (HCL)
 terraform/*.tf linguist-language=HCL
 # Docker
 docker-compose.yaml linguist-language=Dockerfile linguist-vendored=false
@@ -35,7 +40,7 @@ docker-compose.yaml linguist-language=Dockerfile linguist-vendored=false
 frontend/**/*.css linguist-language=CSS
 frontend/**/*.scss linguist-language=CSS
 
-# 5. OCULTAR DOCUMENTAÇÃO E ASSETS (Para não roubarem percentagem)
+# 5. OCULTAR DOCUMENTOS (Para não diluir a porcentagem)
 levantamento-de-requisitos/** linguist-documentation=true
 arquitetura/** linguist-documentation=true
 public/** linguist-vendored=true
