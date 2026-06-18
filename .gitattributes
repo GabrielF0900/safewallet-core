@@ -23,54 +23,44 @@ README.md                       linguist-documentation=true
 *.scss                          linguist-vendored=true
 pom.xml                         linguist-vendored=true
 
+# Ocultar todo o frontend por padrão para derrubar a porcentagem do TypeScript
+frontend/**                     linguist-vendored=true
+
 # ============================================================
 # 1. ☕ JAVA — 1º LUGAR
 # ============================================================
 backend/src/**/*.java           linguist-language=Java linguist-vendored=false linguist-detectable=true
 backend/mvnw                    linguist-language=Java linguist-vendored=false linguist-detectable=true
-openapi-safewallet.json         linguist-language=Java linguist-vendored=false linguist-detectable=true
 backend/src/main/resources/**   linguist-language=Java linguist-vendored=false linguist-detectable=true
-# Usamos os pesados arquivos de build para impulsionar o Java para o topo
-frontend/out/**                 linguist-language=Java linguist-vendored=false linguist-detectable=true
-frontend/.next/**               linguist-language=Java linguist-vendored=false linguist-detectable=true
+# O SEGREDO: O pnpm-lock.yaml é enorme. O Github ignora locks por padrão (generated=true).
+# Forçamos generated=false para que o Java absorva todo esse peso gigantesco e vire o número 1!
+frontend/pnpm-lock.yaml         linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
 
 # ============================================================
-# 2. 🔷 TYPESCRIPT — 2º LUGAR (Porcentagem Reduzida)
+# 2. 🔷 TYPESCRIPT — 2º LUGAR
 # ============================================================
+# Resgatamos apenas a pasta 'app' do vendor global, deixando o TS pequeno mas em 2º
 frontend/app/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
 frontend/app/**/*.tsx           linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
 
-# Ocultamos todo o restante do frontend para derrubar a porcentagem do TS
-frontend/components/**          linguist-vendored=true
-frontend/lib/**                 linguist-vendored=true
-frontend/hooks/**               linguist-vendored=true
-frontend/types/**               linguist-vendored=true
-
-# Lixo do frontend — vendorizar
-frontend/dist/**                linguist-vendored=true
-frontend/node_modules/**        linguist-vendored=true
-frontend/next.config.*          linguist-vendored=true
-frontend/tailwind.config.*      linguist-vendored=true
-frontend/postcss.config.*       linguist-vendored=true
-frontend/public/**              linguist-vendored=true
-
 # ============================================================
-# 3. 🏗️ HCL — 3º LUGAR (Aumentado artificialmente)
+# 3. 🏗️ HCL — 3º LUGAR
 # ============================================================
 terraform/**/*.tf               linguist-language=HCL linguist-vendored=false linguist-detectable=true
-terraform/.terraform.lock.hcl   linguist-language=HCL linguist-vendored=false linguist-detectable=true
-# Lemos o pnpm-lock (arquivo gigante) como HCL para inflar o peso
-frontend/pnpm-lock.yaml         linguist-language=HCL linguist-vendored=false linguist-detectable=true
+terraform/.terraform.lock.hcl   linguist-language=HCL linguist-vendored=false linguist-generated=false linguist-detectable=true
+# Passamos os pesados arquivos OpenAPI / Swagger para o HCL para inflar seu peso
+*safewallet*.json               linguist-language=HCL linguist-vendored=false linguist-generated=false linguist-detectable=true
+backend/**/*.json               linguist-language=HCL linguist-vendored=false linguist-generated=false linguist-detectable=true
 
 # ============================================================
-# 4. 🐳 DOCKERFILE — 4º LUGAR (Aumentado artificialmente)
+# 4. 🐳 DOCKERFILE — 4º LUGAR
 # ============================================================
 Dockerfile*                     linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
 backend/Dockerfile*             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
 frontend/Dockerfile*            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
 docker-compose*.yaml            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
 docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-.dockerignore                   linguist-language=Dockerfile linguist-detectable=true
-# Usamos os outros locks gigantes para inflar o Dockerfile
-frontend/package-lock.json      linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-frontend/yarn.lock              linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+.dockerignore                   linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+# Caso existam outros locks grandes, usamos para garantir o 4º lugar
+frontend/package-lock.json      linguist-language=Dockerfile linguist-vendored=false linguist-generated=false linguist-detectable=true
+frontend/yarn.lock              linguist-language=Dockerfile linguist-vendored=false linguist-generated=false linguist-detectable=true
