@@ -42,7 +42,7 @@ O ecossistema do SafeWallet Core resolve esses desafios através de padrões de 
 
 4. **Trituração de Credenciais (BCrypt)**: Aplicação do algoritmo de hashing adaptativo e salting `BCryptPasswordEncoder` para garantir que senhas originais nunca toquem o banco de dados em texto plano.
 
-5. **Tratamento Resiliente de Exceções Globais**: Uma central de atendimento de falhas (`GlobalExceptionHandler`) que captures desde erros de validação do Jakarta (`@Valid`) até quebras de regras de negócio (`RuntimeException`), blindando metadados e respondendo contratos limpos, evitando o vazamento de detalhes técnicos sensíveis do servidor.
+5. **Tratamento Resiliente de Exceções Globais**: Uma central de atendimento de falhas (`GlobalExceptionHandler`) que captura desde erros de validação do Jakarta (`@Valid`) até quebras de regras de negócio (`RuntimeException`), blindando metadados e respondendo contratos limpos, evitando o vazamento de detalhes técnicos sensíveis do servidor.
 
 6. **Fluxo de Transações ACID**: Operações de depósito, saque e transferência executadas dentro de transações que garantem consistência de dados e rollback automático em caso de falha.
 
@@ -65,7 +65,7 @@ A arquitetura acima representa a estrutura completa do SafeWallet Core, orquestr
 | **Distribuição Global** | CloudFront | Aceleração de conteúdo estático e roteamento inteligente |
 | **Balanceamento de Carga** | Elastic Load Balancer (ALB) | Distribuição de tráfego HTTP/HTTPS entre instâncias |
 | **Orquestração de Containers** | ECS Fargate | Execução de microsserviços sem gerenciamento de infraestrutura |
-| **Backend Core** | Java 21, Spring Boot 4.0.6 | Motor core de execução do ecossistema |
+| **Backend Core** | Java 21, Spring Boot 3.x | Motor core de execução do ecossistema |
 | **Segurança** | Spring Security, Auth0 Java-JWT | Controle de eclusas e assinaturas criptográficas |
 | **Criptografia** | BCrypt Ciphers | Hashing e salting de senhas em repouso |
 | **Persistência** | Spring Data JPA, Hibernate | Mapeamento objeto-relacional e queries automatizadas |
@@ -100,8 +100,6 @@ O usuário acessa o portal de autenticação. Nos bastidores, ao validar as cred
 
 ### 3️⃣ A Criação de Novos Usuários
 Caso ainda não tenha uma conta, o sistema disponibiliza um formulário de cadastro validado e reativo. Ao submeter, a API aplica automaticamente o **hashing adaptativo BCrypt** na senha do usuário. A senha original nunca toca o banco de dados PostgreSQL, mitigando riscos de vazamentos catastróficos. O usuário 1 e o usuário 2 realizam seus cadastros sob essa proteção.
-
-![Cadastro - Passo 1](./public/imagens-do-sistema-rodando/05-criando-usuario-1.jpeg)
 
 ![Cadastro - Passo 2](./public/imagens-do-sistema-rodando/06-criando-usuario-2.jpeg)
 
