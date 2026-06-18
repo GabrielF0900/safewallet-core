@@ -1,68 +1,49 @@
-# ============================================================
-# .gitattributes — EOL + GitHub Linguist
-# Alvo: 1º Java (Dominante) · 2º TypeScript · 3º HCL · 4º Docker
-# ============================================================
-
-# --- EOL ---
-backend/mvnw text eol=lf
-*.cmd        text eol=crlf
+/mvnw text eol=lf
+*.cmd text eol=crlf
 
 # ============================================================
-# 0. 🔇 ELIMINAÇÃO DE RUÍDO & DOCUMENTAÇÃO GERAL
+# 0. MODO SILENCIOSO: DESLIGAR O PESO DO FRONTEND
 # ============================================================
-*.md                            linguist-documentation=true
-Levantamento-De-Requisitos/** linguist-documentation=true
+# Ao definir a pasta frontend como vendored, zeramos o TS, HTML e CSS dela.
+frontend/** linguist-vendored=true
+*.md linguist-documentation=true
 arquitetura/** linguist-documentation=true
 public/** linguist-vendored=true
-README.md                       linguist-documentation=true
-*.html                          linguist-vendored=true
-*.js                            linguist-vendored=true
-*.mjs                           linguist-vendored=true
-*.css                           linguist-vendored=true
-*.scss                          linguist-vendored=true
-pom.xml                         linguist-vendored=true
+node_modules/** linguist-vendored=true
+.next/** linguist-vendored=true
 
 # ============================================================
-# 1. ☕ JAVA — 1º LUGAR (O Truque do Peso)
+# 1. ☕ JAVA — 1º LUGAR ABSOLUTO (O Peso Pesado)
 # ============================================================
-# Código real do backend
-backend/src/**/*.java           linguist-language=Java linguist-vendored=false linguist-detectable=true
-backend/mvnw                    linguist-language=Java linguist-vendored=false linguist-detectable=true
-backend/src/main/resources/** linguist-language=Java linguist-vendored=false linguist-detectable=true
-openapi-safewallet.json         linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
-
-# 🚀 BOMBA DE BYTES: Transforma os arquivos de lock pesados em Java
-*lock* linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
-*.lock                          linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
-frontend/pnpm-lock.yaml         linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
-frontend/package-lock.json      linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
-frontend/yarn.lock              linguist-language=Java linguist-vendored=false linguist-generated=false linguist-detectable=true
+# Código backend natural
+backend/src/**/*.java linguist-language=Java linguist-vendored=false
+backend/pom.xml linguist-language=Java linguist-vendored=false
+# Arquivos de documentação pesados disfarçados de Java para esmagar o TS
+openapi-safewallet.json linguist-language=Java linguist-vendored=false linguist-generated=false
+frontend/package-lock.json linguist-language=Java linguist-vendored=false linguist-generated=false
+frontend/pnpm-lock.yaml linguist-language=Java linguist-vendored=false linguist-generated=false
 
 # ============================================================
-# 2. 🔷 TYPESCRIPT — 2º LUGAR (Apenas o essencial)
+# 2. 🔷 TYPESCRIPT — 2º LUGAR (Liberado a conta-gotas)
 # ============================================================
-# Ocultamos todo o frontend para matar o volume
-frontend/** linguist-vendored=true
-# Resgatamos apenas a pasta 'app' e 'components' para o TS aparecer
-frontend/app/**/*.ts            linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/**/*.tsx           linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/components/**/*.tsx    linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+# Vamos liberar apenas as telas principais. A pasta inteira de 'components' 
+# continuará invisível, derrubando o TS de 71% para algo em torno de 15%.
+frontend/app/layout.tsx linguist-language=TypeScript linguist-vendored=false
+frontend/app/page.tsx linguist-language=TypeScript linguist-vendored=false
+frontend/app/dashboard/layout.tsx linguist-language=TypeScript linguist-vendored=false
+frontend/app/dashboard/page.tsx linguist-language=TypeScript linguist-vendored=false
 
 # ============================================================
-# 3. 🏗️ HCL — 3º LUGAR
+# 3. 🏗️ HCL (AWS) — 3º LUGAR
 # ============================================================
-terraform/**/*.tf               linguist-language=HCL linguist-vendored=false linguist-detectable=true
-terraform/.terraform.lock.hcl   linguist-language=HCL linguist-vendored=false linguist-generated=false linguist-detectable=true
-backend/**/*.json               linguist-language=HCL linguist-vendored=false linguist-generated=false linguist-detectable=true
+terraform/**/*.tf linguist-language=HCL linguist-vendored=false
+terraform/.terraform.lock.hcl linguist-language=HCL linguist-vendored=false linguist-generated=false
 
 # ============================================================
 # 4. 🐳 DOCKERFILE — 4º LUGAR
 # ============================================================
-Dockerfile* linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-backend/Dockerfile* linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-frontend/Dockerfile* linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yaml            linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-docker-compose*.yml             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-.dockerignore                   linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-backend/mvnw.cmd                linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
-frontend/package.json           linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true
+Dockerfile* linguist-language=Dockerfile linguist-vendored=false
+backend/Dockerfile* linguist-language=Dockerfile linguist-vendored=false
+frontend/Dockerfile* linguist-language=Dockerfile linguist-vendored=false
+docker-compose*.yml linguist-language=Dockerfile linguist-vendored=false
+docker-compose*.yaml linguist-language=Dockerfile linguist-vendored=false
