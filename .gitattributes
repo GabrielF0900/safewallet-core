@@ -2,58 +2,64 @@
 *.cmd text eol=crlf
 
 # ============================================================
-# 1. LIMPEZA GERAL — Exclui lixo de contagem do linguist
+# 1. BLOCO GLOBAL — Apaga tudo do radar do Linguist por padrão
 # ============================================================
-*.html linguist-vendored=true
-*.json linguist-generated=true
-*.lock linguist-generated=true
+# Markup / config
+*.html  linguist-vendored=true
+*.json  linguist-generated=true
+*.lock  linguist-generated=true
 *lock*  linguist-generated=true
 *.md    linguist-documentation=true
-
-# YAML gerado / config — excluir da contagem por padrão
 *.yaml  linguist-generated=true
 *.yml   linguist-generated=true
+*.mjs   linguist-vendored=true
+*.cjs   linguist-vendored=true
 
-# Pastas pesadas do frontend (bibliotecas / build)
-frontend/components/** linguist-vendored=true
-frontend/lib/**        linguist-vendored=true
-frontend/hooks/**      linguist-vendored=true
-frontend/.next/**      linguist-vendored=true
-frontend/out/**        linguist-vendored=true
-node_modules/**        linguist-vendored=true
+# Bloqueia TODOS os arquivos CSS e JavaScript
+*.css   linguist-vendored=true
+*.scss  linguist-vendored=true
+*.js    linguist-vendored=true
+*.jsx   linguist-vendored=true
+
+# Bloqueia TODOS os TypeScript globalmente (sobrescrito abaixo apenas onde interessa)
+*.ts    linguist-vendored=true
+*.tsx   linguist-vendored=true
+
+# Pastas de build / dependências
+frontend/.next/**    linguist-vendored=true
+frontend/out/**      linguist-vendored=true
+node_modules/**      linguist-vendored=true
 
 # Documentações e anexos
-arquitetura/**                    linguist-documentation=true
-Levantamento-De-Requisitos/**     linguist-documentation=true
-levantamento-de-requisitos/**     linguist-documentation=true
+arquitetura/**                  linguist-documentation=true
+Levantamento-De-Requisitos/**   linguist-documentation=true
+levantamento-de-requisitos/**   linguist-documentation=true
 
 # ============================================================
-# 2. ☕ JAVA — 1º LUGAR ABSOLUTO (Motor Principal)
+# 2. ☕ JAVA — 1º LUGAR (Motor Principal do Backend)
 # ============================================================
 backend/src/main/java/**/*.java   linguist-language=Java linguist-vendored=false linguist-detectable=true
 backend/src/test/java/**/*.java   linguist-language=Java linguist-vendored=false linguist-detectable=true
-backend/pom.xml                   linguist-language=Maven POM linguist-vendored=false linguist-detectable=true
 
 # ============================================================
-# 3. 🔷 TYPESCRIPT — 2º LUGAR ESTÁVEL
-# Apenas a pasta 'app' visível para controlar o peso em bytes.
+# 3. 🔷 TYPESCRIPT — 2º LUGAR
+# Apenas as páginas e rotas da pasta 'app' são visíveis.
+# Todos os demais .ts/.tsx foram bloqueados acima.
 # ============================================================
-frontend/app/**/*.ts              linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/**/*.tsx             linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/**/*.ts    linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/**/*.tsx   linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
 
 # ============================================================
 # 4. 🏗️ HCL (Terraform / AWS) — 3º LUGAR
 # ============================================================
-terraform/**/*.tf                 linguist-language=HCL linguist-vendored=false linguist-detectable=true
-terraform/**/*.tfvars             linguist-language=HCL linguist-vendored=false linguist-detectable=true
+terraform/**/*.tf       linguist-language=HCL linguist-vendored=false linguist-detectable=true
+terraform/**/*.tfvars   linguist-language=HCL linguist-vendored=false linguist-detectable=true
 
 # ============================================================
 # 5. 🐳 DOCKERFILE — 4º LUGAR
-# docker-compose precisa substituir a regra *.yml acima.
+# Regras específicas sobrescrevem o *.yml bloqueado acima.
 # ============================================================
-Dockerfile                        linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
-Dockerfile*                       linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
-backend/Dockerfile*               linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
-frontend/Dockerfile*              linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
-docker-compose*.yml               linguist-language=YAML       linguist-vendored=false linguist-detectable=true linguist-generated=false
-docker-compose*.yaml              linguist-language=YAML       linguist-vendored=false linguist-detectable=true linguist-generated=false
+Dockerfile              linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
+Dockerfile*             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
+backend/Dockerfile*     linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
+frontend/Dockerfile*    linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
