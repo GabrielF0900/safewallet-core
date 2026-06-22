@@ -2,9 +2,8 @@
 *.cmd text eol=crlf
 
 # ============================================================
-# 1. BLOCO GLOBAL — Apaga tudo do radar do Linguist por padrão
+# 1. EXCLUSÕES GLOBAIS
 # ============================================================
-# Markup / config
 *.html  linguist-vendored=true
 *.json  linguist-generated=true
 *.lock  linguist-generated=true
@@ -12,54 +11,54 @@
 *.md    linguist-documentation=true
 *.yaml  linguist-generated=true
 *.yml   linguist-generated=true
-*.mjs   linguist-vendored=true
-*.cjs   linguist-vendored=true
+*.mjs   linguist-detectable=false
+*.cjs   linguist-detectable=false
+*.css   linguist-detectable=false
+*.scss  linguist-detectable=false
+*.js    linguist-detectable=false
+*.jsx   linguist-detectable=false
 
-# Bloqueia TODOS os arquivos CSS e JavaScript
-*.css   linguist-vendored=true
-*.scss  linguist-vendored=true
-*.js    linguist-vendored=true
-*.jsx   linguist-vendored=true
+# ============================================================
+# 2. TYPESCRIPT — bloqueio global total
+# ============================================================
+*.ts    linguist-detectable=false
+*.tsx   linguist-detectable=false
 
-# Bloqueia TODOS os TypeScript globalmente (sobrescrito abaixo apenas onde interessa)
-*.ts    linguist-vendored=true
-*.tsx   linguist-vendored=true
-
-# Pastas de build / dependências
+# Pastas de dependências e build
 frontend/.next/**    linguist-vendored=true
 frontend/out/**      linguist-vendored=true
 node_modules/**      linguist-vendored=true
 
-# Documentações e anexos
+# Documentações
 arquitetura/**                  linguist-documentation=true
 Levantamento-De-Requisitos/**   linguist-documentation=true
 levantamento-de-requisitos/**   linguist-documentation=true
 
 # ============================================================
-# 2. ☕ JAVA — 1º LUGAR (Motor Principal do Backend)
+# 3. ☕ JAVA — 1º LUGAR
 # ============================================================
-backend/src/main/java/**/*.java   linguist-language=Java linguist-vendored=false linguist-detectable=true
-backend/src/test/java/**/*.java   linguist-language=Java linguist-vendored=false linguist-detectable=true
+backend/src/main/java/**/*.java   linguist-language=Java linguist-detectable=true linguist-vendored=false
+backend/src/test/java/**/*.java   linguist-language=Java linguist-detectable=true linguist-vendored=false
 
 # ============================================================
-# 3. 🔷 TYPESCRIPT — 2º LUGAR
-# Apenas as páginas e rotas da pasta 'app' são visíveis.
-# Todos os demais .ts/.tsx foram bloqueados acima.
+# 4. 🔷 TYPESCRIPT — 2º LUGAR
+# Apenas os arquivos de entrada da aplicação (app root)
 # ============================================================
-frontend/app/**/*.ts    linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
-frontend/app/**/*.tsx   linguist-language=TypeScript linguist-vendored=false linguist-detectable=true
+frontend/app/page.tsx     linguist-language=TypeScript linguist-detectable=true linguist-vendored=false
+frontend/app/layout.tsx   linguist-language=TypeScript linguist-detectable=true linguist-vendored=false
+frontend/app/login/page.tsx      linguist-language=TypeScript linguist-detectable=true linguist-vendored=false
+frontend/app/register/page.tsx   linguist-language=TypeScript linguist-detectable=true linguist-vendored=false
 
 # ============================================================
-# 4. 🏗️ HCL (Terraform / AWS) — 3º LUGAR
+# 5. 🏗️ HCL (Terraform / AWS) — 3º LUGAR
 # ============================================================
-terraform/**/*.tf       linguist-language=HCL linguist-vendored=false linguist-detectable=true
-terraform/**/*.tfvars   linguist-language=HCL linguist-vendored=false linguist-detectable=true
+terraform/**/*.tf       linguist-language=HCL linguist-detectable=true linguist-vendored=false
+terraform/**/*.tfvars   linguist-language=HCL linguist-detectable=true linguist-vendored=false
 
 # ============================================================
-# 5. 🐳 DOCKERFILE — 4º LUGAR
-# Regras específicas sobrescrevem o *.yml bloqueado acima.
+# 6. 🐳 DOCKERFILE — 4º LUGAR
 # ============================================================
-Dockerfile              linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
-Dockerfile*             linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
-backend/Dockerfile*     linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
-frontend/Dockerfile*    linguist-language=Dockerfile linguist-vendored=false linguist-detectable=true linguist-generated=false
+Dockerfile              linguist-language=Dockerfile linguist-detectable=true linguist-vendored=false linguist-generated=false
+Dockerfile*             linguist-language=Dockerfile linguist-detectable=true linguist-vendored=false linguist-generated=false
+backend/Dockerfile*     linguist-language=Dockerfile linguist-detectable=true linguist-vendored=false linguist-generated=false
+frontend/Dockerfile*    linguist-language=Dockerfile linguist-detectable=true linguist-vendored=false linguist-generated=false
